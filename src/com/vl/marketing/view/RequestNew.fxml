@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestNewController">
+<BorderPane prefHeight="537.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestNewController">
    <center>
       <AnchorPane prefHeight="500.0" prefWidth="1000.0">
          <children>
@@ -135,7 +135,7 @@
                         </GridPane>
                      </children>
                   </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="321.0" prefWidth="998.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="337.0" prefWidth="998.0">
                      <children>
                         <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="311.0" prefWidth="998.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
@@ -160,12 +160,14 @@
                               <Insets />
                            </opaqueInsets>
                         </ScrollPane>
-                        <ButtonBar layoutX="784.0" layoutY="239.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+                        <ButtonBar layoutX="784.0" layoutY="239.0" prefHeight="25.0" prefWidth="176.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
                           <buttons>
                               <Button mnemonicParsing="false" onAction="#handleNewItem" text="Add Item" />
                               <Button mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
                           </buttons>
                         </ButtonBar>
+                        <Label layoutX="51.0" layoutY="296.0" text="Request Number:" translateY="37.0" />
+                        <Label fx:id="requestNum" layoutX="197.0" layoutY="296.0" translateY="37.0" />
                      </children>
                      <opaqueInsets>
                         <Insets />

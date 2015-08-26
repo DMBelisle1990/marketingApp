@@ -12,8 +12,6 @@ import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.vl.marketing.model.Request;
 import com.vl.marketing.util.AlertGenerator;
 
-import javafx.scene.control.Alert.AlertType;
-
 public class DBAccessor {
 	
 	private static String MYSQL_DRIVER =  "com.mysql.jdbc.Driver";

@@ -3,7 +3,6 @@ package com.vl.marketing.view;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -42,9 +41,10 @@ public class RequestNewController {
 	@FXML private TextField startDateField;
 	@FXML private TextField endDateField;
 	@FXML private TextField descriptionField;
-	
 	@FXML private ComboBox<String> coopType;
 	@FXML private ComboBox<String> payment;
+	
+	@FXML private Label requestNum;
 	
 	private ObservableList<Item> data = FXCollections.observableArrayList();
 	private MainApp mainApp;

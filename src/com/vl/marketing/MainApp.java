@@ -3,7 +3,6 @@ package com.vl.marketing;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.model.Request;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.ApprovalOverviewController;
