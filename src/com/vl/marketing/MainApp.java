@@ -35,7 +35,6 @@ public class MainApp extends Application {
 	 */
 	private ObservableList<Request> requestData = FXCollections.observableArrayList();
 	
-	
 	public MainApp() {}
 	
 	public ObservableList<Request> getRequestData() {
@@ -58,6 +57,7 @@ public class MainApp extends Application {
 			initRootLayout();
 			showRequestNew();
 		} else if (result.get() == buttonTypeTwo) {
+			initRootLayout2();
 			showApprovalOverview();
 		}
 	}
@@ -70,6 +70,22 @@ public class MainApp extends Application {
 			// Load the root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
+			rootLayout = (BorderPane) loader.load();
+			
+			// Show the scene containing the root layout.
+			Scene scene = new Scene(rootLayout);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void initRootLayout2() {
+		try {
+			// Load the root layout from fxml file.
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/RootLayout2.fxml"));
 			rootLayout = (BorderPane) loader.load();
 			
 			// Show the scene containing the root layout.
@@ -100,7 +116,21 @@ public class MainApp extends Application {
 		}
 	}
 	
-	public void showApproval(Request request) {
+	public void showApprovalOverview() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(MainApp.class.getResource("view/ApprovalOverview.fxml"));
+			BorderPane page = (BorderPane) loader.load();
+			rootLayout.setCenter(page);
+			
+			ApprovalOverviewController controller = loader.getController();
+			controller.setMainApp(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void showApproval(Request request, ApprovalOverviewController aoc) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(MainApp.class.getResource("view/Approval.fxml"));
@@ -114,7 +144,9 @@ public class MainApp extends Application {
 			dialogStage.setScene(scene);
 	
 			ApprovalController controller = loader.getController();
+			controller.setCaller(aoc);
 			controller.setRequest(request);
+			controller.setDialogStage(dialogStage);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -158,28 +190,6 @@ public class MainApp extends Application {
 			
 			ItemNewController controller = loader.getController();
 			controller.setCaller(rnc);
-			controller.setDialogStage(dialogStage);
-			dialogStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void showApprovalOverview() {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/ApprovalOverview.fxml"));
-			BorderPane page = (BorderPane) loader.load();
-			
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Requests");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(primaryStage);
-			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
-			
-			ApprovalOverviewController controller = loader.getController();
-			controller.setMainApp(this);
 			controller.setDialogStage(dialogStage);
 			dialogStage.showAndWait();
 		} catch (IOException e) {

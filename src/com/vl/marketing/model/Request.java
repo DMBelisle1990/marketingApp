@@ -1,6 +1,5 @@
 package com.vl.marketing.model;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -8,10 +7,9 @@ import java.util.LinkedHashMap;
 import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.util.AlertGenerator;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert.AlertType;
 
 
@@ -33,12 +31,14 @@ public class Request {
 	private final StringProperty phone;
 	private final StringProperty fax;
 	private final StringProperty email;
-	private final ObjectProperty<LocalDate> startDate;
-	private final ObjectProperty<LocalDate> endDate;
+	private final StringProperty startDate;
+	private final StringProperty endDate;
 	private final StringProperty description;
 	private final StringProperty coopType;
 	private final StringProperty payment;
 	private int pending;
+	private int approved = 0;
+	private int rejected = 0;
 	private ArrayList<String> keys = new ArrayList<>(Arrays.asList(
 								"request_num", "company_name", "address", "city_state",
 								"zip", "web_address", "contact", "title", "phone", "fax",
@@ -48,50 +48,53 @@ public class Request {
 	private LinkedHashMap<String, String> data;
 
 	public Request() {
-		this.requestNum = new SimpleStringProperty("");
-		this.companyName = new SimpleStringProperty("");
-		this.address = new SimpleStringProperty("");
-		this.cityState = new SimpleStringProperty("");
-		this.zip = new SimpleStringProperty("");
-		this.webAddress = new SimpleStringProperty("");
-		this.contactName = new SimpleStringProperty("");
-		this.title = new SimpleStringProperty("");
-		this.phone = new SimpleStringProperty("");
-		this.fax = new SimpleStringProperty("");
-		this.email = new SimpleStringProperty("");
-		this.startDate = new SimpleObjectProperty<LocalDate>();
-		this.endDate = new SimpleObjectProperty<LocalDate>();
-		this.description = new SimpleStringProperty("");
-		this.coopType = new SimpleStringProperty("");
-		this.payment = new SimpleStringProperty("");
+		this.requestNum 	= new SimpleStringProperty("");
+		this.companyName 	= new SimpleStringProperty("");
+		this.address 		= new SimpleStringProperty("");
+		this.cityState 		= new SimpleStringProperty("");
+		this.zip 			= new SimpleStringProperty("");
+		this.webAddress 	= new SimpleStringProperty("");
+		this.contactName    = new SimpleStringProperty("");
+		this.title 			= new SimpleStringProperty("");
+		this.phone 			= new SimpleStringProperty("");
+		this.fax 			= new SimpleStringProperty("");
+		this.email 			= new SimpleStringProperty("");
+		this.startDate	    = new SimpleStringProperty("");
+		this.endDate 		= new SimpleStringProperty("");
+		this.description    = new SimpleStringProperty("");
+		this.coopType 		= new SimpleStringProperty("");
+		this.payment		= new SimpleStringProperty("");
 	}
 	
-	public Request(LinkedHashMap<String, String> requestInitializer, int pending) {
+	public Request(LinkedHashMap<String, String> requestInitializer, int pending, int approved, int rejected) {
 		data = requestInitializer;
-		this.requestNum = new SimpleStringProperty(requestInitializer.get("request_num"));
-		this.companyName = new SimpleStringProperty(requestInitializer.get("company_name"));
-		this.address = new SimpleStringProperty(requestInitializer.get("address"));
-		this.cityState = new SimpleStringProperty(requestInitializer.get("city_state"));
-		this.zip = new SimpleStringProperty(requestInitializer.get("zip"));
-		this.webAddress = new SimpleStringProperty(requestInitializer.get("web_address"));
-		this.contactName = new SimpleStringProperty(requestInitializer.get("contact"));
-		this.title = new SimpleStringProperty(requestInitializer.get("title"));
-		this.phone = new SimpleStringProperty(requestInitializer.get("fax"));
-		this.fax = new SimpleStringProperty(requestInitializer.get("phone"));
-		this.email = new SimpleStringProperty(requestInitializer.get("email"));
-		this.startDate = new SimpleObjectProperty<LocalDate>();
-		this.endDate = new SimpleObjectProperty<LocalDate>();
-		this.description = new SimpleStringProperty(requestInitializer.get("description"));
-		this.coopType = new SimpleStringProperty(requestInitializer.get("cootype"));
-		this.payment = new SimpleStringProperty(requestInitializer.get("payment"));
-		this.pending = pending;
+		this.requestNum 	= new SimpleStringProperty(requestInitializer.get("request_num"));
+		this.companyName	= new SimpleStringProperty(requestInitializer.get("company_name"));
+		this.address 		= new SimpleStringProperty(requestInitializer.get("address"));
+		this.cityState 		= new SimpleStringProperty(requestInitializer.get("city_state"));
+		this.zip		    = new SimpleStringProperty(requestInitializer.get("zip"));
+		this.webAddress	    = new SimpleStringProperty(requestInitializer.get("web_address"));
+		this.contactName    = new SimpleStringProperty(requestInitializer.get("contact"));
+		this.title 			= new SimpleStringProperty(requestInitializer.get("title"));
+		this.phone 			= new SimpleStringProperty(requestInitializer.get("fax"));
+		this.fax 			= new SimpleStringProperty(requestInitializer.get("phone"));
+		this.email 			= new SimpleStringProperty(requestInitializer.get("email"));
+		this.startDate 		= new SimpleStringProperty(requestInitializer.get("start_date"));
+		this.endDate 		= new SimpleStringProperty(requestInitializer.get("end_date"));
+		this.description 	= new SimpleStringProperty(requestInitializer.get("description"));
+		this.coopType 		= new SimpleStringProperty(requestInitializer.get("cootype"));
+		this.payment 		= new SimpleStringProperty(requestInitializer.get("payment"));
+		this.pending 		= pending;
+		this.approved 		= approved;
+		this.rejected		= rejected;
 	}
 	
 	/**
 	 * Database modifiers.
 	 */
-	public void save(String saveMessage) {
+	public void save(String saveMessage, ObservableList<Item> items) {
 		if(DBAccessor.addRquest(this)) {
+			DBAccessor.addItems(items);
 			AlertGenerator.newAlert(AlertType.INFORMATION, "message", "", saveMessage);
 		} else {
 			AlertGenerator.newAlert(AlertType.ERROR, "error", "Request has failed to submit", "");
@@ -124,6 +127,14 @@ public class Request {
 	public int getPending() { return pending; }
 	
 	public void setPending(int pending) { this.pending = pending; }
+
+	public int getApproved() { return approved; }
+
+	public void setApproved(int approved) { this.approved= approved; }
+
+	public int getRejected() { return rejected; }
+
+	public void setRejected(int rejected) { this.rejected = rejected; }
 	
 	
 	
@@ -227,20 +238,20 @@ public class Request {
 	
 	
 	
-	public LocalDate getStartDate() { return startDate.get(); }
+	public String getStartDate() { return startDate.get(); }
 	
-	public void setStartDate(LocalDate startDate) { this.startDate.set(startDate); }
+	public void setStartDate(String startDate) { this.startDate.set(startDate); }
 	
-	public ObjectProperty<LocalDate> startDateProperty() { return startDate; }
-	
-	
+	public StringProperty startDateProperty() { return startDate; }
 	
 	
-	public LocalDate getEndDate() { return endDate.get(); }
 	
-	public void setEndDate(LocalDate endDate) { this.endDate.set(endDate); }
 	
-	public ObjectProperty<LocalDate> endDateProperty() { return endDate; }
+	public String getEndDate() { return endDate.get(); }
+	
+	public void setEndDate(String endDate) { this.endDate.set(endDate); }
+	
+	public StringProperty endDateProperty() { return endDate; }
 	
 	
 	

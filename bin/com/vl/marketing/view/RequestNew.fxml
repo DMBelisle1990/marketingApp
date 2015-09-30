@@ -16,7 +16,7 @@
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                      <children>
-                        <GridPane layoutX="286.0" layoutY="94.0" prefHeight="261.0" prefWidth="998.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="10.0">
+                        <GridPane fx:id="topPane" layoutX="286.0" layoutY="94.0" prefHeight="261.0" prefWidth="998.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="10.0">
                           <columnConstraints>
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="65.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="145.0" />
@@ -44,16 +44,27 @@
                               <Label text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                               <Label text="Fax" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                               <Label text="Email" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                              <Label text="Start Date" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                              <Label text="End Date" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                              <Label text="Cooperative Type" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <Label text="Payment Method" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                               <Label text="Description" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                              <Label text="Cooperative Type" GridPane.columnIndex="4" GridPane.rowIndex="4" />
-                              <Label text="Payment Method" GridPane.columnIndex="4" GridPane.rowIndex="5" />
-                              <TextField fx:id="companyNameField" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                                 <GridPane.margin>
-                                    <Insets right="30.0" />
-                                 </GridPane.margin>
-                              </TextField>
+                              <Label fx:id="date1" text="Start Date" GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                              <Label fx:id="date2" text="End Date" GridPane.columnIndex="4" GridPane.rowIndex="5" />
+                              <Label text="                        Company Information" GridPane.columnSpan="2">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="TOP_CENTER" text="                        Contact Information" GridPane.columnIndex="2" GridPane.columnSpan="2">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <Label text="                        Cooperative Details" GridPane.columnIndex="4" GridPane.columnSpan="2">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <ComboBox fx:id="companyNameField" onAction="#setRequestNumLabel" onHidden="#autoFillForm" prefWidth="169.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <TextField fx:id="addressField" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <GridPane.margin>
                                     <Insets right="30.0" />
@@ -76,61 +87,46 @@
                               </TextField>
                               <TextField fx:id="contactNameField" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
                               <TextField fx:id="titleField" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
                               <TextField fx:id="phoneField" GridPane.columnIndex="3" GridPane.rowIndex="3">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
                               <TextField fx:id="faxField" GridPane.columnIndex="3" GridPane.rowIndex="4">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
                               <TextField fx:id="emailField" GridPane.columnIndex="3" GridPane.rowIndex="5">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="startDateField" GridPane.columnIndex="5" GridPane.rowIndex="1">
-                                 <GridPane.margin>
-                                    <Insets right="30.0" />
-                                 </GridPane.margin>
-                              </TextField>
-                              <TextField fx:id="endDateField" GridPane.columnIndex="5" GridPane.rowIndex="2">
-                                 <GridPane.margin>
-                                    <Insets right="30.0" />
-                                 </GridPane.margin>
-                              </TextField>
+                              <ComboBox fx:id="coopType" onHidden="#setDateFields" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="payment" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="2" />
                               <TextField fx:id="descriptionField" GridPane.columnIndex="5" GridPane.rowIndex="3">
                                  <GridPane.margin>
-                                    <Insets right="30.0" />
+                                    <Insets right="25.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <Label text="                        Company Information" GridPane.columnSpan="2">
-                                 <font>
-                                    <Font name="System Bold" size="13.0" />
-                                 </font>
-                              </Label>
-                              <Label alignment="TOP_CENTER" text="                        Contact Information" GridPane.columnIndex="2" GridPane.columnSpan="2">
-                                 <font>
-                                    <Font name="System Bold" size="13.0" />
-                                 </font>
-                              </Label>
-                              <Label text="                        Cooperative Details" GridPane.columnIndex="4" GridPane.columnSpan="2">
-                                 <font>
-                                    <Font name="System Bold" size="13.0" />
-                                 </font>
-                              </Label>
-                              <ComboBox fx:id="coopType" prefWidth="164.0" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                              <ComboBox fx:id="payment" prefWidth="164.0" GridPane.columnIndex="5" GridPane.rowIndex="5" />
+                              <TextField fx:id="startDateField" GridPane.columnIndex="5" GridPane.rowIndex="4">
+                                 <GridPane.margin>
+                                    <Insets right="25.0" />
+                                 </GridPane.margin>
+                              </TextField>
+                              <TextField fx:id="endDateField" GridPane.columnIndex="5" GridPane.rowIndex="5">
+                                 <GridPane.margin>
+                                    <Insets right="25.0" />
+                                 </GridPane.margin>
+                              </TextField>
                            </children>
                         </GridPane>
                      </children>
@@ -141,7 +137,6 @@
                            <content>
                               <TableView fx:id="itemTable" editable="true" prefHeight="274.0" prefWidth="996.0">
                                 <columns>
-                                  <TableColumn fx:id="itemName" prefWidth="75.0" text="Item" />
                                   <TableColumn fx:id="vlNum" prefWidth="77.0" text="VL Product #" />
                                     <TableColumn fx:id="sku" prefWidth="75.0" text="Reseller SKU" />
                                     <TableColumn fx:id="type" editable="false" prefWidth="75.0" sortable="false" text="Type" />
@@ -160,14 +155,14 @@
                               <Insets />
                            </opaqueInsets>
                         </ScrollPane>
-                        <ButtonBar layoutX="784.0" layoutY="239.0" prefHeight="25.0" prefWidth="176.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+                        <ButtonBar fx:id="buttonHolder" layoutX="784.0" layoutY="239.0" prefHeight="25.0" prefWidth="176.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
                           <buttons>
                               <Button mnemonicParsing="false" onAction="#handleNewItem" text="Add Item" />
                               <Button mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
                           </buttons>
                         </ButtonBar>
                         <Label layoutX="51.0" layoutY="296.0" text="Request Number:" translateY="37.0" />
-                        <Label layoutX="197.0" layoutY="296.0" text="Label" translateY="37.0" />
+                        <Label fx:id="requestNum" layoutX="197.0" layoutY="296.0" textFill="#f80f02" translateY="37.0" />
                      </children>
                      <opaqueInsets>
                         <Insets />

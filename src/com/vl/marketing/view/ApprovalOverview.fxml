@@ -14,16 +14,19 @@
          </children></Pane>
    </bottom>
    <center>
-      <ListView fx:id="requestNumList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <ListView fx:id="requestNumList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin></ListView>
    </center>
    <top>
       <MenuBar BorderPane.alignment="CENTER">
         <menus>
-          <Menu mnemonicParsing="false" text="Display">
+          <Menu mnemonicParsing="false" text="Sort By">
             <items>
-              <MenuItem mnemonicParsing="false" text="Pending" />
-                  <MenuItem mnemonicParsing="false" text="Approved" />
-                  <MenuItem mnemonicParsing="false" text="Rejected" />
+              <MenuItem mnemonicParsing="false" onAction="#handlePending" text="Pending" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleApproved" text="Approved" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleRejected" text="Rejected" />
             </items>
           </Menu>
         </menus>

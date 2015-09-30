@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 
 public class AlertGenerator {
@@ -28,5 +29,14 @@ public class AlertGenerator {
 		} else {
 			return false;
 		}
+	}
+	
+	public static String textInput(String title, String headerText, String contentText) {
+		TextInputDialog dialog = new TextInputDialog("");
+		dialog.setTitle(title);
+		dialog.setHeaderText(headerText);
+		dialog.setContentText(contentText);
+		Optional<String> result = dialog.showAndWait();
+		return result.isPresent() ? result.get() : "NO_MSG";
 	}
 }
