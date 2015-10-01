@@ -37,9 +37,9 @@ public class ApprovalOverviewController {
 	@FXML
 	private void initialize() throws InterruptedException, ExecutionException {
 		requestNumList.setItems(pendingRequests);
-		setList("approved");
-		setList("rejected");
-		setList("pending");
+		setList("A");
+		setList("R");
+		setList("P");
 		requestNumList.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 	        @Override
@@ -96,17 +96,17 @@ public class ApprovalOverviewController {
 	
 	@FXML
 	private void handlePending() throws InterruptedException, ExecutionException {
-		setList("pending");
+		setList("P");
 	}
 	
 	@FXML
 	private void handleApproved() throws InterruptedException, ExecutionException {
-		setList("approved");
+		setList("A");
 	}
 	
 	@FXML
 	private void handleRejected() throws InterruptedException, ExecutionException {
-		setList("rejected");
+		setList("R");
 	}
 	
 	/**
@@ -121,15 +121,15 @@ public class ApprovalOverviewController {
 		th = new Thread(task);
 		th.setDaemon(true);
 		th.start();
-		if(filter == "pending") {
+		if(filter == "P") {
 			pendingRequests = task.get();
 			requestNumList.setItems(pendingRequests);
 			activeList = pendingRequests;
-		} else if(filter == "approved") {
+		} else if(filter == "A") {
 			approvedRequests = task.get();
 			requestNumList.setItems(approvedRequests);
 			activeList = approvedRequests;
-		} else if(filter == "rejected") {
+		} else if(filter == "R") {
 			rejectedRequests = task.get();
 			requestNumList.setItems(rejectedRequests);
 			activeList = rejectedRequests;

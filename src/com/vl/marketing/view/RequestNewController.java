@@ -2,6 +2,8 @@ package com.vl.marketing.view;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -56,6 +58,7 @@ public class RequestNewController {
 	@FXML private Button deleteButton;
 	
 	private boolean dateRangePresent;
+	private boolean deletePresent;
 	
 	/**
 	 * List of all items being submitted in the new request
@@ -94,6 +97,17 @@ public class RequestNewController {
 							"Credit");
 		companyNameField.getItems().addAll(DBAccessor.getCompanyNames());
 		
+		deleteButton = new Button("Delete");
+		deletePresent = false;
+		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+	        @Override
+	        public void handle(ActionEvent event) {
+	        	if(AlertGenerator.confirmation("confirmation", "Are you sure you want to delete this request?", "This action can't be undone")) {
+	        		DBAccessor.deleteRequest(getRequestNum());
+	        		handleRefresh();
+	        	}
+	        }
+	    });
 		
 		vlNum.setCellValueFactory(cellData -> cellData.getValue().vlNumProperty());
 		sku.setCellValueFactory(cellData -> cellData.getValue().skuProperty());
@@ -140,6 +154,8 @@ public class RequestNewController {
 			dateRangePresent = true;
 		}
 		allowEditting(true);
+		removeDeleteButton();
+		requestNum.setText("");
 	}
 	
 	
@@ -153,10 +169,12 @@ public class RequestNewController {
 	private void handleSubmit() { 
 		if (validInput()) {
 			submitHelper();
-			request = new Request(requestInitializer, 1, 0, 0);
+			request = new Request(requestInitializer);
+			requestInitializer.put("status", "P");
 			if(AlertGenerator.confirmation("confirmation", "Are you sure you want to submit this request?", "This action can't be undone")){
 				request.save("Request has been submitted for approval", data);
 			}
+			
 		}else {
 			System.out.println("Bad Input");
 		}
@@ -167,7 +185,10 @@ public class RequestNewController {
 	private void handleSave() {
 		if (validInput()) {
 			submitHelper();
-			request = new Request(requestInitializer, DBAccessor.getPending(requestInitializer.get("request_num")), 0 , 0);
+			String status = DBAccessor.getStatus(getRequestNum());
+			if(null == status) status = "0";
+			requestInitializer.put("status", status);
+			request = new Request(requestInitializer);
 			request.save("Request saved", data);
 		} else {
 			System.out.println("Bad Input");
@@ -239,6 +260,7 @@ public class RequestNewController {
 		requestInitializer.put("description", descriptionField.getText());
 		requestInitializer.put("cootype", coopType.getValue());
 		requestInitializer.put("payment", payment.getValue());
+		requestInitializer.put("rejectReason", "");
 	}
 	
 	
@@ -267,13 +289,22 @@ public class RequestNewController {
 		endDateField.setText(request.getEndDate());
 		coopType.setValue(request.getCoopType());
 		payment.setValue(request.getPayment());
-		for(Item i : DBAccessor.getItems(request.getRequestNum())) {
-			data.add(i);
-		}
+		for(Item i : DBAccessor.getItems(request.getRequestNum())) data.add(i);
 	}
 	
 	
 	public void addDeleteButton() {
+		if(!deletePresent) {
+			buttonHolder.getButtons().add(deleteButton);
+			deletePresent = true;
+		}
+	}
+	
+	public void removeDeleteButton() {
+		if(deletePresent) {
+			buttonHolder.getButtons().remove(deleteButton);
+			deletePresent = false;
+		}
 	}
 	
 	

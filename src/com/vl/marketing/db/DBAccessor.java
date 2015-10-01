@@ -34,7 +34,7 @@ public class DBAccessor {
 	private static ArrayList<String> dbRequestHeaders = new ArrayList<String>(
 				   Arrays.asList("request_num", "company_name", "address", "city_state", "zip", 
 						  "web_address", "contact", "title", "phone", "fax", "email", "start_date", 
-						  "end_date", "description", "cootype", "payment"));
+						  "end_date", "description", "cootype", "payment", "rejectReason"));
 	public static ArrayList<String> dbItemHeaders = new ArrayList<String>(
 				  Arrays.asList("vl_num", "sku", "type", "srp", 
 						  		"normal_cost", "promo_price", "promo_cost", "ber"));
@@ -42,8 +42,11 @@ public class DBAccessor {
 	private static ObservableList<String> companyNames = FXCollections.observableArrayList();
 	private static ObservableList<String> productNumbers = FXCollections.observableArrayList();
 	private static List<Double> prices = new ArrayList<Double>();
-	
 	private static final int NUM_REQ_HEADERS = dbRequestHeaders.size();
+	
+	
+	
+	
 	
 	private DBAccessor() {}
 	
@@ -57,7 +60,6 @@ public class DBAccessor {
 	public static boolean addRquest(Request request) {
 		try {
 			openConnection();
-			//Build the query.
 			values = request.getValues();
 			query = "INSERT into requests (";
 			String questionMarks = "";
@@ -65,18 +67,16 @@ public class DBAccessor {
 				query += dbRequestHeaders.get(i) + ", ";
 				questionMarks += "?, ";
 			}
-			query += "pending) values(" + questionMarks + "?)";
+			query += "status) values(" + questionMarks + "?)";
 			
 			ps = con.prepareStatement(query);
 			for (int i = 0; i < values.size(); i++) {
 				ps.setString(i+1, values.get(i));
 			}
-			ps.setInt(values.size()+1, request.getPending());
 			ps.executeUpdate();
 			return true;
 		} catch (MySQLIntegrityConstraintViolationException e) {
-			if(AlertGenerator.confirmation("Alert", "Request with request number '" + request.getRequestNum() + "' already exists",
-										"Would you like to overwrite it?")) {
+			if(AlertGenerator.confirmation("Alert", "Request with request number '" + request.getRequestNum() + "' already exists", "Would you like to overwrite it?")) {
 				deleteItems(request.getRequestNum());
 				updateRequest(request);
 				return true;
@@ -103,16 +103,15 @@ public class DBAccessor {
 			for(int i = 0; i < NUM_REQ_HEADERS; i++) {
 				query += dbRequestHeaders.get(i) + " = ?, ";
 			}
-			query += "pending = ? WHERE request_num = ?";
+			query += "status = ? WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			for(int i = 0; i < values.size(); i++) {
 				ps.setString(i+1, values.get(i));
 			}
-			ps.setInt(values.size()+1, request.getPending());
-			ps.setString(values.size()+2, request.getRequestNum());
+			ps.setString(values.size()+1, request.getRequestNum());
 			ps.executeUpdate();
 			} catch (SQLException e) {
-			e.printStackTrace();
+				e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
@@ -168,7 +167,8 @@ public class DBAccessor {
 				for (int i = 1; i <= NUM_REQ_HEADERS; i++) {
 					data.put(dbRequestHeaders.get(i-1), rs.getString(i));
 				}
-				request = new Request(data, rs.getInt(NUM_REQ_HEADERS + 1), rs.getInt(NUM_REQ_HEADERS + 2), rs.getInt(NUM_REQ_HEADERS + 3));
+				data.put("status", rs.getString(NUM_REQ_HEADERS + 1));
+				request = new Request(data);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -178,72 +178,56 @@ public class DBAccessor {
 		return request;
 	}
 	
-	/**
-	 * This method returns the pending status on the request with the supplied requestNum.
-	 * Returns not pending if the request doesn't exist
-	 */
-	public static int getPending(String requestNum) {
+	
+	public static String getStatus(String requestNum) {
 		try {
 			openConnection();
-			query = "SELECT EXISTS(SELECT pending FROM requests WHERE request_num = '" + requestNum + "')";
+			query = "SELECT status FROM requests WHERE request_num = '" + requestNum + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
-			if(rs.next()) {
-				if(rs.getInt(1) == 1) {
-					query = "SELECT pending FROM requests WHERE request_num = '" + requestNum + "'";
-					ps = con.prepareStatement(query);
-					rs = ps.executeQuery();
-					if(rs.next()) { return rs.getInt(1); }
-				} else {
-					return 0;
-				}
-			}
+			if(rs.next()) return rs.getString(1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		return 0;
+		return null;
 	}
 	
-	/**
-	 * Pass pending, approved, or rejected to obtain the respective list of requestNums.
-	 * Pass an empty string to get all requests.
-	 */
+	
+	
 	public static ArrayList<String> getRequestNums(String constraint) {
-		ArrayList<String> result = new ArrayList<>();
 		try {
+			ArrayList<String> result = new ArrayList<>();
 			openConnection();
 			query = "SELECT request_num FROM requests";
-			if(constraint != "") query += " WHERE + " + constraint + " = 1";
+			if(constraint != "") query += " WHERE status = '" + constraint + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			while(rs.next()){ result.add(rs.getString(1)); }
+			return result;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
+			
 		}
-		return result;
+		return null;
 	}
 	
 	/**
-	 * @param requestNum
-	 * @param decision
-	 * 
-	 * sets the approval status for the supplied request number
+	 * @param requestNum - requestNum of the request to be updated
+	 * @param status - Status of request, A for approve, R for reject, P for pending
+	 * 				 - An optional message can be attached if R
 	 */
-	public static void approveOrRejectRequest(String requestNum, String decision) {
+	public static void updateStatus(String requestNum, String status) {
 		try {
-			//antiDecision ensures that approved and rejected never have the same value
-			String antiDecision = (decision == "approved" ? "rejected" : "approved");
 			openConnection();
-			query = "UPDATE requests SET " + decision + " = ?, pending = ?, " + antiDecision + " = ? WHERE request_num = ?";
+			query = "UPDATE requests SET status = ?, rejectReason = ? WHERE request_num = ?";
 			ps = con.prepareStatement(query);
-			ps.setInt(1, 1);
-			ps.setInt(2, 0);
-			ps.setInt(3, 0);
-			ps.setString(4, requestNum);
+			ps.setString(1, status.substring(0,1));
+			ps.setString(2, status.substring(1));
+			ps.setString(3, requestNum);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -439,6 +423,16 @@ public class DBAccessor {
 		}
 		return null;
 	}
+	/*
+	public static void updateOriginalPrice(String requestNum) {
+		try {
+			openConnection();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection();
+		}
+	}*/
 	
 	
 	

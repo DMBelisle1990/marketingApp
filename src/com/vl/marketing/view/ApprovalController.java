@@ -87,15 +87,15 @@ public class ApprovalController {
 	}
 	
 	private void setStatus() {
-		if(request.getPending() == 1) {
+		if(request.getStatus().equals("P")) {
 			status.setText("Pending");
 			status.setTextFill(Color.web("#e08d18"));
 		}
-		if(request.getApproved() == 1) {
+		if(request.getStatus().equals("A")) {
 			status.setText("Approved");
 			status.setTextFill(Color.web("green"));
 		}
-		if(request.getRejected() == 1) {
+		if(request.getStatus().equals("R")) {
 			status.setText("Rejected");
 			status.setTextFill(Color.web("red"));
 		}
@@ -106,8 +106,7 @@ public class ApprovalController {
 	private void handleReject() {
 		String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
 		if(reason != "NO_MSG") {
-			System.out.println(reason);
-			approveOrReject("rejected");
+			setStatus("R" + reason);
 			caller.removeRequest(request.getRequestNum(), "approved");
 			handleCancel();
 		}
@@ -116,7 +115,7 @@ public class ApprovalController {
 	@FXML
 	private void handleApprove() {
 		if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
-			approveOrReject("approved");
+			setStatus("A");
 			caller.removeRequest(request.getRequestNum(), "rejected");
 			handleCancel();
 		}
@@ -125,10 +124,10 @@ public class ApprovalController {
 	/**
 	 * Starts a new thread to update approved/rejected status
 	 */
-	private void approveOrReject(String decision) {
+	private void setStatus(String decision) {
 		Task<Integer> task = new Task<Integer>() {
 			@Override protected Integer call() throws Exception {
-				DBAccessor.approveOrRejectRequest(request.getRequestNum(), decision);
+				DBAccessor.updateStatus(request.getRequestNum(), decision);
 				return 1;
 			}
 		};

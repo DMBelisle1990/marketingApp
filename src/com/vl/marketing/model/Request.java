@@ -2,6 +2,7 @@ package com.vl.marketing.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 
 import com.vl.marketing.db.DBAccessor;
@@ -36,9 +37,8 @@ public class Request {
 	private final StringProperty description;
 	private final StringProperty coopType;
 	private final StringProperty payment;
-	private int pending;
-	private int approved = 0;
-	private int rejected = 0;
+	private final StringProperty rejectReason;
+	private final StringProperty status;
 	private ArrayList<String> keys = new ArrayList<>(Arrays.asList(
 								"request_num", "company_name", "address", "city_state",
 								"zip", "web_address", "contact", "title", "phone", "fax",
@@ -64,9 +64,11 @@ public class Request {
 		this.description    = new SimpleStringProperty("");
 		this.coopType 		= new SimpleStringProperty("");
 		this.payment		= new SimpleStringProperty("");
+		this.status			= new SimpleStringProperty("");
+		this.rejectReason   = new SimpleStringProperty("");
 	}
 	
-	public Request(LinkedHashMap<String, String> requestInitializer, int pending, int approved, int rejected) {
+	public Request(LinkedHashMap<String, String> requestInitializer) {
 		data = requestInitializer;
 		this.requestNum 	= new SimpleStringProperty(requestInitializer.get("request_num"));
 		this.companyName	= new SimpleStringProperty(requestInitializer.get("company_name"));
@@ -84,9 +86,8 @@ public class Request {
 		this.description 	= new SimpleStringProperty(requestInitializer.get("description"));
 		this.coopType 		= new SimpleStringProperty(requestInitializer.get("cootype"));
 		this.payment 		= new SimpleStringProperty(requestInitializer.get("payment"));
-		this.pending 		= pending;
-		this.approved 		= approved;
-		this.rejected		= rejected;
+		this.rejectReason   = new SimpleStringProperty(requestInitializer.get("rejectReason"));
+		this.status         = new SimpleStringProperty(requestInitializer.get("status"));
 	}
 	
 	/**
@@ -124,18 +125,11 @@ public class Request {
 	
 	
 	
-	public int getPending() { return pending; }
+	public String getStatus() { return status.get(); }
 	
-	public void setPending(int pending) { this.pending = pending; }
+	public void setStatus(String status) { this.status.set(status); }
 
-	public int getApproved() { return approved; }
-
-	public void setApproved(int approved) { this.approved= approved; }
-
-	public int getRejected() { return rejected; }
-
-	public void setRejected(int rejected) { this.rejected = rejected; }
-	
+	public StringProperty statusProperty() { return status; }
 	
 	
 	
@@ -144,6 +138,14 @@ public class Request {
 	public void setRequestNum(String requestNum) { this.requestNum.set(requestNum); }
 	
 	public StringProperty requestNumProperty() { return requestNum; }
+	
+	
+	
+	public String getRejectReason() { return rejectReason.get(); }
+	
+	public void setRejectReason(String rejectReason) { this.rejectReason.set(rejectReason); }
+	
+	public StringProperty rejectReasonProperty() { return rejectReason; }
 	
 	
 	

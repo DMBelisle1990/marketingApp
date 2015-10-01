@@ -75,10 +75,12 @@ public class RequestOverviewController {
 						e1.printStackTrace();
 					}
 	            	caller.setRequest(request);
-	            	if(request.getApproved() == 1 || request.getRejected() == 1) {
+	            	if(request.getStatus().equals("A") || request.getStatus().equals("R")) {
 	            		caller.allowEditting(false);
+	            		caller.removeDeleteButton();
 	            	} else {
 	            		caller.allowEditting(true);
+	            		caller.addDeleteButton();
 	            	}
 	            	//Probably to be replaced with a setData method when item table in db is set up
 	            	handleCancel();
