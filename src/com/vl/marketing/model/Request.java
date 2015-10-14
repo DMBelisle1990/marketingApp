@@ -39,6 +39,7 @@ public class Request {
 	private final StringProperty payment;
 	private final StringProperty rejectReason;
 	private final StringProperty status;
+	private final StringProperty approver;
 	private ArrayList<String> keys = new ArrayList<>(Arrays.asList(
 								"request_num", "company_name", "address", "city_state",
 								"zip", "web_address", "contact", "title", "phone", "fax",
@@ -66,6 +67,7 @@ public class Request {
 		this.payment		= new SimpleStringProperty("");
 		this.status			= new SimpleStringProperty("");
 		this.rejectReason   = new SimpleStringProperty("");
+		this.approver		= new SimpleStringProperty("");
 	}
 	
 	public Request(LinkedHashMap<String, String> requestInitializer) {
@@ -88,6 +90,7 @@ public class Request {
 		this.payment 		= new SimpleStringProperty(requestInitializer.get("payment"));
 		this.rejectReason   = new SimpleStringProperty(requestInitializer.get("rejectReason"));
 		this.status         = new SimpleStringProperty(requestInitializer.get("status"));
+		this.approver		= new SimpleStringProperty(requestInitializer.get("approver"));
 	}
 	
 	/**
@@ -130,6 +133,14 @@ public class Request {
 	public void setStatus(String status) { this.status.set(status); }
 
 	public StringProperty statusProperty() { return status; }
+	
+	
+	
+	public String getApprover() { return approver.get(); }
+	
+	public void setApprover(String approver) { this.approver.set(approver); }
+
+	public StringProperty approverProperty() { return approver; }
 	
 	
 	

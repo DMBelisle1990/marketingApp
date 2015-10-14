@@ -13,6 +13,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
@@ -25,6 +26,7 @@ public class RequestOverviewController {
 	
 	@FXML private ListView<String> requestNumList;
 	@FXML private TextField searchBar;
+	@FXML private ComboBox<String> filter;
 	private Thread th;
 	private String input;
 	private String entryText;
@@ -132,6 +134,16 @@ public class RequestOverviewController {
 	
 	public void setDialogStage(Stage dialogStage) {
 		this.dialogStage = dialogStage;
+	}
+	
+	@FXML 
+	private void filterResults() {
+		switch(filter.getValue()) {
+			case "All": requestNumList.setItems(FXCollections.observableArrayList(DBAccessor.getRequestNums(""))); break;
+			case "Approved": requestNumList.setItems(FXCollections.observableArrayList(DBAccessor.getRequestNums("A"))); break;
+			case "Rejected": requestNumList.setItems(FXCollections.observableArrayList(DBAccessor.getRequestNums("R"))); break;
+			case "Pending": requestNumList.setItems(FXCollections.observableArrayList(DBAccessor.getRequestNums("P"))); break;
+		}
 	}
 	
 	@FXML

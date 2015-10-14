@@ -11,8 +11,6 @@ import com.vl.marketing.view.RequestNewController;
 import com.vl.marketing.view.RequestOverviewController;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -30,21 +28,11 @@ public class MainApp extends Application {
 	private BorderPane requestNew;
 	private BorderPane approval;
 	
-	/**
-	 * The data as an observable list of Requests.
-	 */
-	private ObservableList<Request> requestData = FXCollections.observableArrayList();
-	
-	public MainApp() {}
-	
-	public ObservableList<Request> getRequestData() {
-		return requestData;
-	}
 	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Request Authorization");
+		primaryStage.setTitle("Request Authorization");
 
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setTitle("Log-in");
@@ -201,8 +189,4 @@ public class MainApp extends Application {
 		return primaryStage;
 	}
 
-	public static void main(String[] args) {
-		launch(args);
-	}
-	
 }

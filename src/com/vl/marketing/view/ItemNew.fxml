@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="336.0" prefWidth="313.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.ItemNewController">
+<AnchorPane prefHeight="378.0" prefWidth="313.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.ItemNewController">
    <children>
       <GridPane layoutX="146.0" layoutY="84.0" prefHeight="230.0" prefWidth="293.0" AnchorPane.bottomAnchor="38.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
         <columnConstraints>
@@ -21,6 +21,8 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
@@ -42,6 +44,10 @@
             <TextField fx:id="promoPriceField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             <TextField fx:id="promoCostField" onAction="#calculateBER" onKeyReleased="#calculateBER" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <TextField fx:id="berField" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <TextField fx:id="quantityField" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <TextField fx:id="allowanceField" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+            <Label text="Estimated Quantity" GridPane.rowIndex="9" />
+            <Label text="Other Allowance" GridPane.rowIndex="10" />
          </children>
       </GridPane>
       <Button layoutX="261.0" layoutY="356.0" mnemonicParsing="false" onAction="#handleAdd" prefWidth="70.0" text="Add" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="8.0" />

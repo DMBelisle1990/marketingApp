@@ -20,7 +20,8 @@ public class ItemNewController {
 	@FXML private TextField promoPriceField;
 	@FXML private TextField promoCostField;
 	@FXML private TextField berField;
-	
+	@FXML private TextField quantityField;
+	@FXML private TextField allowanceField;
 	@FXML private ComboBox<String> vlField;
 	@FXML private ComboBox<String> skuField;
 	@FXML private ComboBox<String> typeBox;
@@ -97,6 +98,8 @@ public class ItemNewController {
 					Double.parseDouble(promoPriceField.getText().replace("$", "")),
 					Double.parseDouble(promoCostField.getText().replace("$", "")),
 					Double.parseDouble(berField.getText().replace("$", "")),
+					Double.parseDouble(quantityField.getText()),
+					Double.parseDouble(allowanceField.getText()),
 					caller.getRequestNum()
 					);
 			caller.addItem(item);
@@ -119,7 +122,7 @@ public class ItemNewController {
 	}
 	
 	private void setPriceFields() {
-		prices = DBAccessor.getPrices(vlField.getValue());
+		prices = DBAccessor.getPrices(skuField.getValue(), caller.getCompanyName());
 		if(prices.isEmpty()) {
 			originalSRPField.setText("");
 			normalCostField.setText("");

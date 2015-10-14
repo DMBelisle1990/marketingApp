@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -20,6 +21,7 @@ public class ApprovalOverviewController {
 
 	@FXML private ListView<String> requestNumList;
 	@FXML private TextField searchBar;
+	@FXML private ComboBox<String> filter;
 	private String input;
 	private String entryText;
 	private MainApp mainApp;
@@ -30,9 +32,7 @@ public class ApprovalOverviewController {
 	private ObservableList<String> rejectedRequests;
 	private ObservableList<String> activeList;
 	
-	public ApprovalOverviewController()  {
-		
-	}
+	public ApprovalOverviewController()  {}
 	
 	@FXML
 	private void initialize() throws InterruptedException, ExecutionException {
@@ -94,19 +94,15 @@ public class ApprovalOverviewController {
 		this.mainApp = mainApp;
 	}
 	
-	@FXML
-	private void handlePending() throws InterruptedException, ExecutionException {
-		setList("P");
-	}
 	
-	@FXML
-	private void handleApproved() throws InterruptedException, ExecutionException {
-		setList("A");
-	}
-	
-	@FXML
-	private void handleRejected() throws InterruptedException, ExecutionException {
-		setList("R");
+	@FXML 
+	private void filterResults() throws InterruptedException, ExecutionException {
+		switch(filter.getValue()) {
+			case "All": setList(""); break;
+			case "Approved": setList("A"); break;
+			case "Rejected": setList("R"); break;
+			case "Pending": setList("P"); break;
+		}
 	}
 	
 	/**

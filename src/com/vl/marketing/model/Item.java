@@ -18,12 +18,14 @@ public class Item {
 	private final DoubleProperty promoCost;
 	private final DoubleProperty ber;
 	private final StringProperty requestNum;
+	private final DoubleProperty quantity;
+	private final DoubleProperty allowance;
 	private ArrayList<String> strings = new ArrayList<String>();
 	private ArrayList<Double> doubles = new ArrayList<Double>();
 
 	public Item(String vlNum, String sku, String type,
 			Double originalSRP, Double normalCost, Double promoPrice,
-			Double promoCost, Double ber, String requestNum) {
+			Double promoCost, Double ber, Double quantity, Double allowance, String requestNum) {
 		this.vlNum		 = new SimpleStringProperty(vlNum);
 		this.sku 		 = new SimpleStringProperty(sku);
 		this.type 		 = new SimpleStringProperty(type);
@@ -32,8 +34,12 @@ public class Item {
 		this.promoPrice  = new SimpleDoubleProperty(promoPrice);
 		this.promoCost   = new SimpleDoubleProperty(promoCost);
 		this.ber 		 = new SimpleDoubleProperty(ber);
+		this.quantity    = new SimpleDoubleProperty(quantity);
+		this.allowance   = new SimpleDoubleProperty(allowance);
 		this.requestNum  = new SimpleStringProperty(requestNum);
+		
 	}
+	
 	
 	public StringProperty requestNumProperty() { return requestNum; }
 	
@@ -80,6 +86,16 @@ public class Item {
 	public Double getBer() { return ber.get(); }
 	
 	
+	public DoubleProperty quantityProperty() { return quantity; }
+	
+	public Double getQuantity() { return quantity.get(); }
+	
+	
+	public DoubleProperty allowanceProperty() { return allowance; }
+	
+	public Double getAllowance() { return allowance.get(); }
+	
+	
 	public ArrayList<String> getItemStrings() {
 		strings.add(getVlNum());
 		strings.add(getSku());
@@ -93,6 +109,8 @@ public class Item {
 		doubles.add(getPromoPrice());
 		doubles.add(getPromoCost());
 		doubles.add(getBer());
+		doubles.add(getQuantity());
+		doubles.add(getAllowance());
 		return doubles;
 	}
 

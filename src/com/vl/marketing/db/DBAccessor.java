@@ -34,10 +34,10 @@ public class DBAccessor {
 	private static ArrayList<String> dbRequestHeaders = new ArrayList<String>(
 				   Arrays.asList("request_num", "company_name", "address", "city_state", "zip", 
 						  "web_address", "contact", "title", "phone", "fax", "email", "start_date", 
-						  "end_date", "description", "cootype", "payment", "rejectReason"));
+						  "end_date", "description", "cootype", "payment", "rejectReason", "approver"));
 	public static ArrayList<String> dbItemHeaders = new ArrayList<String>(
 				  Arrays.asList("vl_num", "sku", "type", "srp", 
-						  		"normal_cost", "promo_price", "promo_cost", "ber"));
+						  		"normal_cost", "promo_price", "promo_cost", "ber", "quantity", "allowance"));
 	private static ObservableList<Item> items = FXCollections.observableArrayList();
 	private static ObservableList<String> companyNames = FXCollections.observableArrayList();
 	private static ObservableList<String> productNumbers = FXCollections.observableArrayList();
@@ -56,7 +56,6 @@ public class DBAccessor {
 	 * 
 	 * Attempts to add the supplied request to the database
 	 */
-	
 	public static boolean addRquest(Request request) {
 		try {
 			openConnection();
@@ -94,7 +93,6 @@ public class DBAccessor {
 	 * 
 	 * Attempts to update the supplied request
 	 */
-	
 	public static void updateRequest(Request request) {
 		try {
 			openConnection();
@@ -110,7 +108,7 @@ public class DBAccessor {
 			}
 			ps.setString(values.size()+1, request.getRequestNum());
 			ps.executeUpdate();
-			} catch (SQLException e) {
+		} catch (SQLException e) {
 				e.printStackTrace();
 		} finally {
 			closeConnection();
@@ -122,11 +120,14 @@ public class DBAccessor {
 	 * 
 	 * Delete the request with supplied request number
 	 */
-	
 	public static void deleteRequest(String requestNum) {
 		try {
 			openConnection();
 			query = "DELETE FROM requests WHERE request_num = ?";
+			ps = con.prepareStatement(query);
+			ps.setString(1, requestNum);
+			ps.execute();
+			query = "DELETE FROM items WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, requestNum);
 			ps.execute();
@@ -155,7 +156,6 @@ public class DBAccessor {
 	 * @param requestNum
 	 * @return returns the request with request number requestNum
 	 */
-	
 	public static Request getRequest(String requestNum) {
 		Request request = new Request();
 		try {
@@ -220,14 +220,15 @@ public class DBAccessor {
 	 * @param status - Status of request, A for approve, R for reject, P for pending
 	 * 				 - An optional message can be attached if R
 	 */
-	public static void updateStatus(String requestNum, String status) {
+	public static void updateStatus(String requestNum, String status, String approver) {
 		try {
 			openConnection();
-			query = "UPDATE requests SET status = ?, rejectReason = ? WHERE request_num = ?";
+			query = "UPDATE requests SET status = ?, rejectReason = ?, approver = ? WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, status.substring(0,1));
 			ps.setString(2, status.substring(1));
-			ps.setString(3, requestNum);
+			ps.setString(3, approver);
+			ps.setString(4, requestNum);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -293,7 +294,7 @@ public class DBAccessor {
 			while(rs.next()) {
 				items.add(new Item(rs.getString(1), rs.getString(2), rs.getString(3), 
 								   rs.getDouble(4), rs.getDouble(5), rs.getDouble(6), rs.getDouble(7),
-								   rs.getDouble(8), rs.getString(9)));
+								   rs.getDouble(8), rs.getDouble(9), rs.getDouble(10), rs.getString(9)));
 			}
 			return items;
 		} catch (SQLException e) {
@@ -404,13 +405,14 @@ public class DBAccessor {
 		return null;
 	}
 	
-	public static List<Double> getPrices(String vl) {
+	public static List<Double> getPrices(String model, String company) {
 		try {
 			openConnection();
-			query = "SELECT retailprice, originalcost FROM prices WHERE vl = '" + vl + "'";
+			query = "SELECT retailprice, originalcost FROM prices WHERE model = '" + model + "' AND company = '" + company + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			prices.clear();
+			
 			if(rs.next()) {
 				prices.add(rs.getDouble(1));
 				prices.add(rs.getDouble(2));
@@ -423,16 +425,25 @@ public class DBAccessor {
 		}
 		return null;
 	}
-	/*
-	public static void updateOriginalPrice(String requestNum) {
+	
+	public static void priceProtectionUpdate(String company, List<String> model, List<Number> promoPrice, List<Number> promoCost) {
 		try {
 			openConnection();
+			for(int i = 0; i < model.size(); i++) {
+				query = "UPDATE prices SET retailprice = ?, originalcost = ? WHERE model = ? AND company = ?";
+				ps = con.prepareStatement(query);
+				ps.setDouble(1, (double)promoPrice.get(i));
+				ps.setDouble(2, (double)promoCost.get(i));
+				ps.setString(3, model.get(i));
+				ps.setString(4, company);
+				ps.executeUpdate();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-	}*/
+	}
 	
 	
 	

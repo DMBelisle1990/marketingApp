@@ -1,5 +1,8 @@
 package com.vl.marketing.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.model.Item;
 import com.vl.marketing.model.Request;
@@ -7,9 +10,9 @@ import com.vl.marketing.util.AlertGenerator;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -26,7 +29,8 @@ public class ApprovalController {
 	@FXML private TableColumn<Item, Number> promoPrice;
 	@FXML private TableColumn<Item, Number> promoCost;
 	@FXML private TableColumn<Item, Number> ber;
-	/*Sup girl*/
+	@FXML private TableColumn<Item, Number> quantity;
+	@FXML private TableColumn<Item, Number> allowance;
 	@FXML private Label companyName;
 	@FXML private Label address;
 	@FXML private Label cityState;
@@ -37,16 +41,29 @@ public class ApprovalController {
 	@FXML private Label phone;
 	@FXML private Label fax;
 	@FXML private Label email;
+	@FXML private Label effectiveDate;
 	@FXML private Label startDate;
+	@FXML private Label optionalDate;
 	@FXML private Label endDate;
 	@FXML private Label description;
 	@FXML private Label coopType;
 	@FXML private Label payment;
 	@FXML private Label status;
+	@FXML private Label aName;
+	@FXML private Label aTitle;
+	@FXML private Label aEmail;
+	@FXML private Label aPhone;
+	@FXML private Label aExt;
+	@FXML private Label aFax;
+	@FXML private TextField aNameField;
+	@FXML private TextField aTitleField;
+	@FXML private TextField aEmailField;
+	@FXML private TextField aPhoneField;
+	@FXML private TextField aExtField;
+	@FXML private TextField aFaxField;
 	
 	private Stage dialogStage;
 	private Request request;
-	private Thread th;
 	private ApprovalOverviewController caller;
 	private ObservableList<Item> items = FXCollections.observableArrayList();
 	
@@ -61,6 +78,8 @@ public class ApprovalController {
 		promoPrice.setCellValueFactory(cellData -> cellData.getValue().promoPriceProperty());
 		promoCost.setCellValueFactory(cellData -> cellData.getValue().promoCostProperty());
 		ber.setCellValueFactory(cellData -> cellData.getValue().berProperty());
+		quantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty());
+		allowance.setCellValueFactory(cellData -> cellData.getValue().allowanceProperty());
 	}
 	
 	public void setCaller(ApprovalOverviewController caller) {
@@ -81,32 +100,42 @@ public class ApprovalController {
 		phone.setText(request.getPhone());
 		email.setText(request.getEmail());
 		description.setText(request.getDescription());
+		coopType.setText(request.getCoopType());
+		startDate.setText(request.getStartDate());
+		if(request.getEndDate().equals("")) {
+			optionalDate.setText("");
+			effectiveDate.setText("  Effective Date:");
+		} else {
+			endDate.setText(request.getEndDate());
+		}
+		setApprover();
 		for(Item i : DBAccessor.getItems(request.getRequestNum())) {
 			items.add(i);
 		}
+	}
+	
+	private void setApprover() {
+		aNameField.setText(request.getApprover());
 	}
 	
 	private void setStatus() {
 		if(request.getStatus().equals("P")) {
 			status.setText("Pending");
 			status.setTextFill(Color.web("#e08d18"));
-		}
-		if(request.getStatus().equals("A")) {
+		} else if(request.getStatus().equals("A")) {
 			status.setText("Approved");
 			status.setTextFill(Color.web("green"));
-		}
-		if(request.getStatus().equals("R")) {
+		} else if(request.getStatus().equals("R")) {
 			status.setText("Rejected");
 			status.setTextFill(Color.web("red"));
 		}
-		
 	}
 	
 	@FXML
 	private void handleReject() {
 		String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
 		if(reason != "NO_MSG") {
-			setStatus("R" + reason);
+			DBAccessor.updateStatus(request.getRequestNum(),"R" + reason, aNameField.getText());
 			caller.removeRequest(request.getRequestNum(), "approved");
 			handleCancel();
 		}
@@ -115,26 +144,24 @@ public class ApprovalController {
 	@FXML
 	private void handleApprove() {
 		if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
-			setStatus("A");
+			DBAccessor.updateStatus(request.getRequestNum(), "A", aNameField.getText());
 			caller.removeRequest(request.getRequestNum(), "rejected");
+			
+			if(coopType.getText().equals("Price Protection")) {
+				List<String> skuData = new ArrayList<>();
+				List<Number> promoPriceData = new ArrayList<>();
+				List<Number> promoCostData = new ArrayList<>();
+				for (Item item : itemTable.getItems()) {
+				    skuData.add(sku.getCellObservableValue(item).getValue());
+				    promoPriceData.add(promoPrice.getCellObservableValue(item).getValue());
+				    promoCostData.add(promoCost.getCellObservableValue(item).getValue());
+				}
+				DBAccessor.priceProtectionUpdate(companyName.getText(), skuData, promoPriceData, promoCostData);
+			}
 			handleCancel();
 		}
 	}
 	
-	/**
-	 * Starts a new thread to update approved/rejected status
-	 */
-	private void setStatus(String decision) {
-		Task<Integer> task = new Task<Integer>() {
-			@Override protected Integer call() throws Exception {
-				DBAccessor.updateStatus(request.getRequestNum(), decision);
-				return 1;
-			}
-		};
-		th = new Thread(task);
-		th.setDaemon(true);
-		th.start();
-	}
 	
 	private void handleCancel() {
 		dialogStage.close();

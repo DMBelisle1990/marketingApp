@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.scene.input.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
@@ -7,6 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.collections.FXCollections ?>
 
 <BorderPane prefHeight="537.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestNewController">
    <center>
@@ -14,7 +16,7 @@
          <children>
             <SplitPane dividerPositions="0.36947791164658633" layoutX="-75.0" layoutY="-196.0" orientation="VERTICAL" prefHeight="500.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" styleClass="background" stylesheets="@myCss.css">
                      <children>
                         <GridPane fx:id="topPane" layoutX="286.0" layoutY="94.0" prefHeight="261.0" prefWidth="998.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="10.0">
                           <columnConstraints>
@@ -110,19 +112,33 @@
                                     <Insets right="35.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <ComboBox fx:id="coopType" onHidden="#setDateFields" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                              <ComboBox fx:id="payment" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="2" />
+                              <ComboBox fx:id="coopType" onAction="#setRequestNumLabel" onHidden="#setDateFields" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
+                                 <items>
+       							 	<FXCollections fx:factory="observableArrayList">
+							            <String fx:value="Back End Rebate" />
+							            <String fx:value="Price Protection" />
+							            <String fx:value="Coop" />
+							        </FXCollections>
+   								 </items>
+                              </ComboBox>
+                              <ComboBox fx:id="payment" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="2">
+                              	<items>
+							        <FXCollections fx:factory="observableArrayList">
+							            <String fx:value="Credit" />
+							        </FXCollections>
+							    </items>
+                              </ComboBox>
                               <TextField fx:id="descriptionField" GridPane.columnIndex="5" GridPane.rowIndex="3">
                                  <GridPane.margin>
                                     <Insets right="25.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="startDateField" GridPane.columnIndex="5" GridPane.rowIndex="4">
+                              <TextField fx:id="startDateField" onKeyReleased="#setRequestNumLabel" promptText="xx-xx-xx" GridPane.columnIndex="5" GridPane.rowIndex="4">
                                  <GridPane.margin>
                                     <Insets right="25.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="endDateField" GridPane.columnIndex="5" GridPane.rowIndex="5">
+                              <TextField fx:id="endDateField" promptText="xx-xx-xx" GridPane.columnIndex="5" GridPane.rowIndex="5">
                                  <GridPane.margin>
                                     <Insets right="25.0" />
                                  </GridPane.margin>
@@ -135,7 +151,7 @@
                      <children>
                         <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="311.0" prefWidth="998.0" AnchorPane.bottomAnchor="36.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <content>
-                              <TableView fx:id="itemTable" editable="true" prefHeight="274.0" prefWidth="996.0">
+                              <TableView fx:id="itemTable" editable="true" prefHeight="274.0" prefWidth="996.0" stylesheets="@myCss.css">
                                 <columns>
                                   <TableColumn fx:id="vlNum" prefWidth="77.0" text="VL Product #" />
                                     <TableColumn fx:id="sku" prefWidth="75.0" text="Reseller SKU" />
@@ -145,6 +161,8 @@
                                     <TableColumn fx:id="promoPrice" prefWidth="75.0" text="Promo Price" />
                                     <TableColumn fx:id="promoCost" prefWidth="75.0" text="Promo Cost" />
                                     <TableColumn fx:id="ber" prefWidth="75.0" text="BER" />
+                                    <TableColumn fx:id="quantity" prefWidth="75.0" text="Estimated Qty." />
+                                    <TableColumn fx:id="allowance" prefWidth="75.0" text="Other Allowance" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -163,6 +181,12 @@
                         </ButtonBar>
                         <Label layoutX="51.0" layoutY="296.0" text="Request Number:" translateY="37.0" />
                         <Label fx:id="requestNum" layoutX="197.0" layoutY="296.0" textFill="#f80f02" translateY="37.0" />
+                        <Label layoutX="499.0" layoutY="296.0" text="STATUS:" translateY="37.0">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="status" layoutX="570.0" layoutY="296.0" translateY="37.0" />
                      </children>
                      <opaqueInsets>
                         <Insets />
@@ -186,13 +210,7 @@
                      <accelerator>
                         <KeyCodeCombination alt="UP" code="R" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                      </accelerator></MenuItem>
-                  <Menu mnemonicParsing="false" text="Load">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#handleLoad" text="All" />
-                        <MenuItem mnemonicParsing="false" text="Approved" />
-                        <MenuItem mnemonicParsing="false" text="Rejected" />
-                    </items>
-                  </Menu>
+                  <MenuItem mnemonicParsing="false" onAction="#handleLoad" text="Load Requests" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

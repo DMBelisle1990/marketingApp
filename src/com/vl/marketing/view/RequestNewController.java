@@ -5,7 +5,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ComboBox;
@@ -14,6 +13,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 import java.util.LinkedHashMap;
 import com.vl.marketing.MainApp;
@@ -21,6 +21,8 @@ import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.model.Item;
 import com.vl.marketing.model.Request;
 import com.vl.marketing.util.AlertGenerator;
+import com.vl.marketing.util.InputChecker;
+import com.vl.marketing.util.RequestNumGenerator;
 
 public class RequestNewController {
 	
@@ -33,6 +35,8 @@ public class RequestNewController {
 	@FXML private TableColumn<Item, Number> promoPrice;
 	@FXML private TableColumn<Item, Number> promoCost;
 	@FXML private TableColumn<Item, Number> ber;
+	@FXML private TableColumn<Item, Number> quantity;
+	@FXML private TableColumn<Item, Number> allowance;
 	
 	@FXML private ComboBox<String> companyNameField;
 	@FXML private TextField addressField;
@@ -46,14 +50,14 @@ public class RequestNewController {
 	@FXML private TextField emailField;
 	@FXML private TextField startDateField;
 	@FXML private TextField endDateField;
+	@FXML private TextField descriptionField;
 	@FXML private Label date1;
 	@FXML private Label date2;
-	@FXML private TextField effectiveDateField;
-	@FXML private TextField descriptionField;
+	@FXML private Label requestNum;
+	@FXML private Label status;
 	@FXML private ComboBox<String> coopType;
 	@FXML private ComboBox<String> payment;
 	@FXML private GridPane topPane;
-	@FXML private Label requestNum;
 	@FXML private ButtonBar buttonHolder;
 	@FXML private Button deleteButton;
 	
@@ -84,17 +88,8 @@ public class RequestNewController {
 		itemTable.setItems(data);
 		
 		dateRangePresent = true;
-		effectiveDateField = new TextField();
 		
-		//Populates all the comboboxes
-		coopType.getItems().clear();
-		coopType.getItems().addAll(
-							"Back End Rebate",
-							"Price Protection",
-							"Coop");
-		payment.getItems().clear();
-		payment.getItems().addAll(
-							"Credit");
+		//Dynamically generate all company names
 		companyNameField.getItems().addAll(DBAccessor.getCompanyNames());
 		
 		deleteButton = new Button("Delete");
@@ -117,12 +112,14 @@ public class RequestNewController {
 		promoPrice.setCellValueFactory(cellData -> cellData.getValue().promoPriceProperty());
 		promoCost.setCellValueFactory(cellData -> cellData.getValue().promoCostProperty());
 		ber.setCellValueFactory(cellData -> cellData.getValue().berProperty());
+		quantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty());
+		allowance.setCellValueFactory(cellData -> cellData.getValue().allowanceProperty());
 	}
 	
 	
 	@FXML 
 	private void setRequestNumLabel() {
-		requestNum.setText(companyNameField.getValue() + "_temp_req_num");
+		requestNum.setText(RequestNumGenerator.generate(getCompanyName(), coopType.getValue(), startDateField.getText()));
 	}
 	
 	
@@ -146,8 +143,6 @@ public class RequestNewController {
 		payment.getSelectionModel().clearSelection();
 		data.clear();
 		if(!dateRangePresent) {
-			topPane.getChildren().remove(effectiveDateField);
-			topPane.getChildren().add(startDateField);
 			topPane.getChildren().add(endDateField);
 			date1.setText("Start Date");
 			date2.setText("End Date");
@@ -174,9 +169,6 @@ public class RequestNewController {
 			if(AlertGenerator.confirmation("confirmation", "Are you sure you want to submit this request?", "This action can't be undone")){
 				request.save("Request has been submitted for approval", data);
 			}
-			
-		}else {
-			System.out.println("Bad Input");
 		}
 	}
 	
@@ -190,9 +182,19 @@ public class RequestNewController {
 			requestInitializer.put("status", status);
 			request = new Request(requestInitializer);
 			request.save("Request saved", data);
-		} else {
-			System.out.println("Bad Input");
 		}
+	}
+
+	private boolean validInput() {
+		if(!InputChecker.isValidDate(startDateField.getText())) {
+			System.out.println("Bad start date");
+		//	startDateField.setStyle("-fx-text-box-border: lightgrey ;");
+			return false;
+		} else if(dateRangePresent && !InputChecker.isValidDate(endDateField.getText())) {
+			System.out.println("Bad end date");
+			return false;
+		}
+		return true;
 	}
 	
 	
@@ -204,6 +206,7 @@ public class RequestNewController {
 	
 	@FXML
 	private void autoFillForm() {
+		companyInfo.clear();
 		companyInfo = DBAccessor.getCompanyInfo(getCompanyName());
 		contactNameField.setText(companyInfo.get("contact"));
 		phoneField.setText(companyInfo.get("phone"));
@@ -219,27 +222,20 @@ public class RequestNewController {
 	//     If Coop/BER => start date and end date
 	@FXML
 	private void setDateFields() {
-		if(coopType.getValue() == "Price Protection" && dateRangePresent) {
-			topPane.getChildren().remove(startDateField);
+		if(coopType.getValue() == null) {
+			return;
+		} else if(coopType.getValue().equals("Price Protection") && dateRangePresent) {
 			topPane.getChildren().remove(endDateField);
-			topPane.add(effectiveDateField, 5, 4);
-			effectiveDateField.setMaxWidth(169);
 			date1.setText("Effective Date");
+			endDateField.setText("");
 			date2.setText("");
 			dateRangePresent = false;
-		} else if(coopType.getValue() != "Price Protection" && !dateRangePresent){
-			topPane.getChildren().remove(effectiveDateField);
-			topPane.getChildren().add(startDateField);
+		} else if(!(coopType.getValue().equals("Price Protection")) && !dateRangePresent) {
 			topPane.getChildren().add(endDateField);
 			date1.setText("Start Date");
 			date2.setText("End Date");
 			dateRangePresent = true;
 		}
-	}
-	
-	
-	@FXML
-	private void filterNames() {
 	}
 	
 	
@@ -261,16 +257,10 @@ public class RequestNewController {
 		requestInitializer.put("cootype", coopType.getValue());
 		requestInitializer.put("payment", payment.getValue());
 		requestInitializer.put("rejectReason", "");
+		requestInitializer.put("approver", "");
 	}
 	
 	
-	//TODO Set up validInput checker
-	private boolean validInput() {
-		return true;
-	}
-	
-	
-	//TODO Set up dates 
 	public void setRequest(Request request) {
 		this.request = request;
 		requestNum.setText(request.getRequestNum());
@@ -289,7 +279,23 @@ public class RequestNewController {
 		endDateField.setText(request.getEndDate());
 		coopType.setValue(request.getCoopType());
 		payment.setValue(request.getPayment());
-		for(Item i : DBAccessor.getItems(request.getRequestNum())) data.add(i);
+		setStatus();
+		for(Item i : DBAccessor.getItems(request.getRequestNum())) {
+			data.add(i);
+		}
+	}
+	
+	private void setStatus() {
+		if(request.getStatus().equals("P")) {
+			status.setText("Pending");
+			status.setTextFill(Color.web("#e08d18"));
+		} else if(request.getStatus().equals("A")) {
+			status.setText("Approved");
+			status.setTextFill(Color.web("green"));
+		} else if(request.getStatus().equals("R")) {
+			status.setText("Rejected");
+			status.setTextFill(Color.web("red"));
+		}
 	}
 	
 	

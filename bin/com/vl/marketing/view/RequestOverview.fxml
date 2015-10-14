@@ -5,12 +5,26 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.collections.FXCollections ?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestOverviewController">
    <bottom>
       <Pane prefHeight="76.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="searchBar" layoutX="126.0" layoutY="26.0" onKeyReleased="#search" promptText="Search" />
+            <TextField fx:id="searchBar" layoutX="48.0" layoutY="26.0" onKeyReleased="#search" promptText="Search" />
+            <ComboBox fx:id="filter" onHidden="#filterResults" layoutX="203.0" layoutY="26.0" prefWidth="148.0">
+            	<items>
+					<FXCollections fx:factory="observableArrayList">
+			          <String fx:value="All" />
+			          <String fx:value="Pending" />
+			          <String fx:value="Approved" />
+			          <String fx:value="Rejected" />
+			        </FXCollections>
+            	</items>
+            	<value>
+            		<String fx:value="All" />
+            	</value>
+            </ComboBox>
          </children></Pane>
    </bottom>
    <center>
