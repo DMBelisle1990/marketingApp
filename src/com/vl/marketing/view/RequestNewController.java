@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -16,7 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 import java.util.LinkedHashMap;
-import com.vl.marketing.MainApp;
+import com.vl.marketing.Main;
 import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.model.Item;
 import com.vl.marketing.model.Request;
@@ -48,8 +49,8 @@ public class RequestNewController {
 	@FXML private TextField phoneField;
 	@FXML private TextField faxField;
 	@FXML private TextField emailField;
-	@FXML private TextField startDateField;
-	@FXML private TextField endDateField;
+	@FXML private DatePicker startDateField;
+	@FXML private DatePicker endDateField;
 	@FXML private TextField descriptionField;
 	@FXML private Label date1;
 	@FXML private Label date2;
@@ -69,7 +70,7 @@ public class RequestNewController {
 	 */
 	private ObservableList<Item> data = FXCollections.observableArrayList();
 	
-	private MainApp mainApp;
+	private Main mainApp;
 	private Request request;
 	private LinkedHashMap<String, String> requestInitializer = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> companyInfo		 = new LinkedHashMap<String, String>();
@@ -119,7 +120,7 @@ public class RequestNewController {
 	
 	@FXML 
 	private void setRequestNumLabel() {
-		requestNum.setText(RequestNumGenerator.generate(getCompanyName(), coopType.getValue(), startDateField.getText()));
+		requestNum.setText(RequestNumGenerator.generate(getCompanyName(), coopType.getValue(), startDateField.getValue().toString()));
 	}
 	
 	
@@ -136,8 +137,8 @@ public class RequestNewController {
 		phoneField.clear();
 		faxField.clear();
 		emailField.clear();
-		startDateField.clear();
-		endDateField.clear();
+		startDateField.setValue(null);
+		endDateField.setValue(null);
 		descriptionField.clear();	
 		coopType.getSelectionModel().clearSelection();
 		payment.getSelectionModel().clearSelection();
@@ -186,14 +187,6 @@ public class RequestNewController {
 	}
 
 	private boolean validInput() {
-		if(!InputChecker.isValidDate(startDateField.getText())) {
-			System.out.println("Bad start date");
-		//	startDateField.setStyle("-fx-text-box-border: lightgrey ;");
-			return false;
-		} else if(dateRangePresent && !InputChecker.isValidDate(endDateField.getText())) {
-			System.out.println("Bad end date");
-			return false;
-		}
 		return true;
 	}
 	
@@ -227,7 +220,7 @@ public class RequestNewController {
 		} else if(coopType.getValue().equals("Price Protection") && dateRangePresent) {
 			topPane.getChildren().remove(endDateField);
 			date1.setText("Effective Date");
-			endDateField.setText("");
+			endDateField.setValue(null);
 			date2.setText("");
 			dateRangePresent = false;
 		} else if(!(coopType.getValue().equals("Price Protection")) && !dateRangePresent) {
@@ -251,8 +244,8 @@ public class RequestNewController {
 		requestInitializer.put("fax", faxField.getText());
 		requestInitializer.put("phone", phoneField.getText());
 		requestInitializer.put("email", emailField.getText());
-		requestInitializer.put("start_date", startDateField.getText());
-		requestInitializer.put("end_date", endDateField.getText());
+		requestInitializer.put("start_date", startDateField.getValue().toString());
+		requestInitializer.put("end_date", endDateField.getValue().toString());
 		requestInitializer.put("description", descriptionField.getText());
 		requestInitializer.put("cootype", coopType.getValue());
 		requestInitializer.put("payment", payment.getValue());
@@ -275,8 +268,8 @@ public class RequestNewController {
 		phoneField.setText(request.getPhone());
 		emailField.setText(request.getEmail());
 		descriptionField.setText(request.getDescription());
-		startDateField.setText(request.getStartDate());
-		endDateField.setText(request.getEndDate());
+		//startDateField.setValue(request.getStartDate());
+		//endDateField.setText(request.getEndDate());
 		coopType.setValue(request.getCoopType());
 		payment.setValue(request.getPayment());
 		setStatus();
@@ -363,7 +356,7 @@ public class RequestNewController {
 	}
 	
 	
-	public void setMainApp(MainApp mainApp) {
+	public void setMainApp(Main mainApp) {
 		this.mainApp = mainApp;
 	}
 }

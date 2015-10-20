@@ -4,3 +4,6 @@
     -fx-text-fill: black;
 }
 
+button {
+	-fx-cursor: hand;
+}

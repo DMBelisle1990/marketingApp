@@ -6,5 +6,9 @@
 	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/mysql-connector-java-5.0.8/mysql-connector-java-5.0.8-bin.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/lombok.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/pdfbox-app-1.8.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/controlsfx-8.40.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/controlsfx-samples-8.40.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/fxsampler-1.0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/openjfx-dialogs-1.0.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -244,8 +244,8 @@ public class DBAccessor {
 	public static void addItems(ObservableList<Item> items) {
 		try {
 			openConnection();
+			
 			for(Item item : items) {
-				
 				values = item.getItemStrings();
 				query = "INSERT into items (";
 				String questionMarks = "";
@@ -260,7 +260,7 @@ public class DBAccessor {
 					questionMarks += "?, ";
 				}
 				query +=  "request_num) values (" + questionMarks + "?)";
-				System.out.println(query);
+				
 				ps = con.prepareStatement(query);
 				for (int i = 0; i < values.size(); i++) {
 					ps.setString(i+1, values.get(i));
@@ -271,7 +271,6 @@ public class DBAccessor {
 				}
 				ps.setString(values.size() + doubleValues.size() + 1, item.getRequestNum());
 				ps.executeUpdate();
-				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

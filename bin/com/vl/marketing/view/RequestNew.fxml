@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.collections.FXCollections ?>
 
-<BorderPane prefHeight="537.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestNewController">
+<BorderPane prefHeight="571.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.RequestNewController">
    <center>
       <AnchorPane prefHeight="500.0" prefWidth="1000.0">
          <children>
@@ -46,7 +46,7 @@
                               <Label text="Phone" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                               <Label text="Fax" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                               <Label text="Email" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                              <Label text="Cooperative Type" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                              <Label text="Promo Type" GridPane.columnIndex="4" GridPane.rowIndex="1" />
                               <Label text="Payment Method" GridPane.columnIndex="4" GridPane.rowIndex="2" />
                               <Label text="Description" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                               <Label fx:id="date1" text="Start Date" GridPane.columnIndex="4" GridPane.rowIndex="4" />
@@ -61,7 +61,7 @@
                                     <Font name="System Bold" size="13.0" />
                                  </font>
                               </Label>
-                              <Label text="                        Cooperative Details" GridPane.columnIndex="4" GridPane.columnSpan="2">
+                              <Label text="                        Promotion Details" GridPane.columnIndex="4" GridPane.columnSpan="2">
                                  <font>
                                     <Font name="System Bold" size="13.0" />
                                  </font>
@@ -133,16 +133,8 @@
                                     <Insets right="25.0" />
                                  </GridPane.margin>
                               </TextField>
-                              <TextField fx:id="startDateField" onKeyReleased="#setRequestNumLabel" promptText="xx-xx-xx" GridPane.columnIndex="5" GridPane.rowIndex="4">
-                                 <GridPane.margin>
-                                    <Insets right="25.0" />
-                                 </GridPane.margin>
-                              </TextField>
-                              <TextField fx:id="endDateField" promptText="xx-xx-xx" GridPane.columnIndex="5" GridPane.rowIndex="5">
-                                 <GridPane.margin>
-                                    <Insets right="25.0" />
-                                 </GridPane.margin>
-                              </TextField>
+                              <DatePicker fx:id="startDateField" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="4" />
+                              <DatePicker fx:id="endDateField" prefWidth="169.0" GridPane.columnIndex="5" GridPane.rowIndex="5" />
                            </children>
                         </GridPane>
                      </children>
@@ -156,7 +148,7 @@
                                   <TableColumn fx:id="vlNum" prefWidth="77.0" text="VL Product #" />
                                     <TableColumn fx:id="sku" prefWidth="75.0" text="Reseller SKU" />
                                     <TableColumn fx:id="type" editable="false" prefWidth="75.0" sortable="false" text="Type" />
-                                    <TableColumn fx:id="originalSRP" prefWidth="75.0" text="Original SRP" />
+                                    <TableColumn fx:id="originalSRP" prefWidth="75.0" text="Retail Price" />
                                     <TableColumn fx:id="normalCost" prefWidth="75.0" text="Normal Cost" />
                                     <TableColumn fx:id="promoPrice" prefWidth="75.0" text="Promo Price" />
                                     <TableColumn fx:id="promoCost" prefWidth="75.0" text="Promo Cost" />
@@ -179,14 +171,19 @@
                               <Button mnemonicParsing="false" onAction="#handleSubmit" text="Submit" />
                           </buttons>
                         </ButtonBar>
-                        <Label layoutX="51.0" layoutY="296.0" text="Request Number:" translateY="37.0" />
-                        <Label fx:id="requestNum" layoutX="197.0" layoutY="296.0" textFill="#f80f02" translateY="37.0" />
-                        <Label layoutX="499.0" layoutY="296.0" text="STATUS:" translateY="37.0">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <Label fx:id="status" layoutX="570.0" layoutY="296.0" translateY="37.0" />
+                        <GridPane layoutX="23.0" layoutY="314.0" prefHeight="19.0" prefWidth="273.0" AnchorPane.bottomAnchor="7.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="115.0" minWidth="10.0" prefWidth="110.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="137.0" minWidth="10.0" prefWidth="129.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Request Number:" />
+                              <Label fx:id="requestNum" prefHeight="17.0" prefWidth="5.0" textFill="#f80f02" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
                      </children>
                      <opaqueInsets>
                         <Insets />
@@ -198,7 +195,7 @@
       </AnchorPane>
    </center>
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
+      <MenuBar prefHeight="24.0" prefWidth="1000.0" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>

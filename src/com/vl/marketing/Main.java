@@ -1,11 +1,9 @@
 package com.vl.marketing;
 
 import java.io.IOException;
-import java.util.Optional;
-
 import com.vl.marketing.model.Request;
 import com.vl.marketing.view.ApprovalController;
-import com.vl.marketing.view.ApprovalOverviewController;
+import com.vl.marketing.view.DashboardController;
 import com.vl.marketing.view.ItemNewController;
 import com.vl.marketing.view.RequestNewController;
 import com.vl.marketing.view.RequestOverviewController;
@@ -13,15 +11,12 @@ import com.vl.marketing.view.RequestOverviewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class MainApp extends Application {
+public class Main extends Application {
 	
 	private Stage primaryStage;
 	private BorderPane rootLayout;
@@ -31,36 +26,27 @@ public class MainApp extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
+		// Uncomment to generate more data, DELETE ONCE USING ACTUAL DATA
+		// DummyData dummy = new DummyData();
+		// dummy.populateTable(1000);
 		this.primaryStage = primaryStage;
-		primaryStage.setTitle("Request Authorization");
-
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("Log-in");
-		alert.setHeaderText("Temporary log-in system");
-		ButtonType buttonTypeOne = new ButtonType("Requester");
-		ButtonType buttonTypeTwo = new ButtonType("Approver");
-		alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo);
-		Optional<ButtonType> result = alert.showAndWait();
-		if (result.get() == buttonTypeOne) {
-			initRootLayout();
-			showRequestNew();
-		} else if (result.get() == buttonTypeTwo) {
-			initRootLayout2();
-			showApprovalOverview();
-		}
+		this.primaryStage.setTitle("Dashboard");
+		
+		initRootLayout();
+		
+		showDashBoard();
 	}
 	
 	/**
-	 * Initializes the root layout.
-	 */
+     * Initializes the root layout.
+     */
 	public void initRootLayout() {
 		try {
-			// Load the root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootLayout.fxml"));
-			rootLayout = (BorderPane) loader.load();
+			loader.setLocation(Main.class.getResource("view/RootLayout.fxml"));
+			rootLayout = loader.load();
 			
-			// Show the scene containing the root layout.
+			// Show the scene containing the root layout
 			Scene scene = new Scene(rootLayout);
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -69,59 +55,59 @@ public class MainApp extends Application {
 		}
 	}
 	
-	public void initRootLayout2() {
+	
+	/**
+     * Launches the Authorization DashBoard
+     */
+	public void showDashBoard() {
 		try {
-			// Load the root layout from fxml file.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RootLayout2.fxml"));
-			rootLayout = (BorderPane) loader.load();
+			loader.setLocation(Main.class.getResource("view/Dashboard.fxml"));
+			AnchorPane dashboard = loader.load();
 			
-			// Show the scene containing the root layout.
-			Scene scene = new Scene(rootLayout);
-			primaryStage.setScene(scene);
-			primaryStage.show();
+			// Set the dashboard as the center of the root layout
+			rootLayout.setCenter(dashboard);
+			
+			DashboardController controller = loader.getController();
+			controller.setMain(this);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * Shows the request overview inside the root layout
+	 * Launches the New Request Form
 	 */
 	public void showRequestNew() {
 		try {
 			// Load request overview.
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RequestNew.fxml"));
+			loader.setLocation(Main.class.getResource("view/RequestNew.fxml"));
 			requestNew = (BorderPane) loader.load();
-			rootLayout.setCenter(requestNew);
+			// rootLayout.setCenter(requestNew);
+			
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("New Request");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(requestNew);
+			dialogStage.setScene(scene);
 	
 			RequestNewController controller = loader.getController();
 			controller.setMainApp(this);
-			
+			dialogStage.showAndWait();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void showApprovalOverview() {
+	/**
+	 * Launches the Approver View of the selected Authorization
+	 */
+	public void showApproval(Request request) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/ApprovalOverview.fxml"));
-			BorderPane page = (BorderPane) loader.load();
-			rootLayout.setCenter(page);
-			
-			ApprovalOverviewController controller = loader.getController();
-			controller.setMainApp(this);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void showApproval(Request request, ApprovalOverviewController aoc) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/Approval.fxml"));
+			loader.setLocation(Main.class.getResource("view/Approval.fxml"));
 			approval = (BorderPane) loader.load();
 			
 			Stage dialogStage = new Stage();
@@ -132,7 +118,6 @@ public class MainApp extends Application {
 			dialogStage.setScene(scene);
 	
 			ApprovalController controller = loader.getController();
-			controller.setCaller(aoc);
 			controller.setRequest(request);
 			controller.setDialogStage(dialogStage);
 			dialogStage.showAndWait();
@@ -141,10 +126,13 @@ public class MainApp extends Application {
 		}
 	}
 	
+	/**
+	 * Launches an Overview of all Requests
+	 */
 	public void showRequestOverview(RequestNewController rnc) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/RequestOverview.fxml"));
+			loader.setLocation(Main.class.getResource("view/RequestOverview.fxml"));
 			BorderPane page = (BorderPane) loader.load();
 			
 			Stage dialogStage = new Stage();
@@ -163,10 +151,14 @@ public class MainApp extends Application {
 		}
 	}
 	
+	/**
+	 * Launches a small menu used to attach items to a marketing authorization
+	 * @param rnc : The associated request form
+	 */
 	public void showItemNew(RequestNewController rnc) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(MainApp.class.getResource("view/ItemNew.fxml"));
+			loader.setLocation(Main.class.getResource("view/ItemNew.fxml"));
 			AnchorPane page = (AnchorPane) loader.load();
 			
 			Stage dialogStage = new Stage();

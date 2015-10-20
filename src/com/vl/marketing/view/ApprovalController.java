@@ -64,7 +64,6 @@ public class ApprovalController {
 	
 	private Stage dialogStage;
 	private Request request;
-	private ApprovalOverviewController caller;
 	private ObservableList<Item> items = FXCollections.observableArrayList();
 	
 	@FXML
@@ -82,9 +81,6 @@ public class ApprovalController {
 		allowance.setCellValueFactory(cellData -> cellData.getValue().allowanceProperty());
 	}
 	
-	public void setCaller(ApprovalOverviewController caller) {
-		this.caller = caller;
-	}
 	
 	public void setRequest(Request request) {
 		this.request = request;
@@ -136,7 +132,6 @@ public class ApprovalController {
 		String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
 		if(reason != "NO_MSG") {
 			DBAccessor.updateStatus(request.getRequestNum(),"R" + reason, aNameField.getText());
-			caller.removeRequest(request.getRequestNum(), "approved");
 			handleCancel();
 		}
 	}
@@ -145,7 +140,6 @@ public class ApprovalController {
 	private void handleApprove() {
 		if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
 			DBAccessor.updateStatus(request.getRequestNum(), "A", aNameField.getText());
-			caller.removeRequest(request.getRequestNum(), "rejected");
 			
 			if(coopType.getText().equals("Price Protection")) {
 				List<String> skuData = new ArrayList<>();
