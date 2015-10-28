@@ -20,8 +20,6 @@ public class Item {
 	private final StringProperty requestNum;
 	private final DoubleProperty quantity;
 	private final DoubleProperty allowance;
-	private ArrayList<String> strings = new ArrayList<String>();
-	private ArrayList<Double> doubles = new ArrayList<Double>();
 
 	public Item(String vlNum, String sku, String type,
 			Double originalSRP, Double normalCost, Double promoPrice,
@@ -95,23 +93,5 @@ public class Item {
 	
 	public Double getAllowance() { return allowance.get(); }
 	
-	
-	public ArrayList<String> getItemStrings() {
-		strings.add(getVlNum());
-		strings.add(getSku());
-		strings.add(getType());
-		return strings;
-	}
-	
-	public ArrayList<Double> getItemDoubles() {
-		doubles.add(getSRP());
-		doubles.add(getNormalCost());
-		doubles.add(getPromoPrice());
-		doubles.add(getPromoCost());
-		doubles.add(getBer());
-		doubles.add(getQuantity());
-		doubles.add(getAllowance());
-		return doubles;
-	}
 
 }

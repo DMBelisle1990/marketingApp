@@ -21,7 +21,7 @@ import javafx.collections.ObservableList;
 public class DBAccessor {
 	
 	private static String MYSQL_DRIVER =  "com.mysql.jdbc.Driver";
-	private static String MYSQL_URL    =  "jdbc:mysql://localhost:3306/test_database";
+	private static String MYSQL_URL    =  "jdbc:mysql://192.168.1.203:3306/VLDEV";
 	
 	private static Connection con;
 	private static ResultSet  rs;
@@ -60,7 +60,7 @@ public class DBAccessor {
 		try {
 			openConnection();
 			values = request.getValues();
-			query = "INSERT into requests (";
+			query = "INSERT into mktr_requests (";
 			String questionMarks = "";
 			for (int i = 0; i < NUM_REQ_HEADERS; i++) {
 				query += dbRequestHeaders.get(i) + ", ";
@@ -97,7 +97,7 @@ public class DBAccessor {
 		try {
 			openConnection();
 			values = request.getValues();
-			query = "UPDATE requests SET "; 
+			query = "UPDATE mktr_requests SET "; 
 			for(int i = 0; i < NUM_REQ_HEADERS; i++) {
 				query += dbRequestHeaders.get(i) + " = ?, ";
 			}
@@ -123,11 +123,11 @@ public class DBAccessor {
 	public static void deleteRequest(String requestNum) {
 		try {
 			openConnection();
-			query = "DELETE FROM requests WHERE request_num = ?";
+			query = "DELETE FROM mktr_requests WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, requestNum);
 			ps.execute();
-			query = "DELETE FROM items WHERE request_num = ?";
+			query = "DELETE FROM mktr_items WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, requestNum);
 			ps.execute();
@@ -141,7 +141,7 @@ public class DBAccessor {
 	public static void deleteItems(String requestNum) {
 		try {
 			openConnection();
-			query = "DELETE FROM items WHERE request_num = ?";
+			query = "DELETE FROM mktr_items WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, requestNum);
 			ps.execute();
@@ -160,7 +160,7 @@ public class DBAccessor {
 		Request request = new Request();
 		try {
 			openConnection();
-			query = "SELECT * FROM requests WHERE request_num = '" + requestNum + "'";
+			query = "SELECT * FROM mktr_requests WHERE request_num = '" + requestNum + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			if(rs.next()) {
@@ -182,7 +182,7 @@ public class DBAccessor {
 	public static String getStatus(String requestNum) {
 		try {
 			openConnection();
-			query = "SELECT status FROM requests WHERE request_num = '" + requestNum + "'";
+			query = "SELECT status FROM mktr_requests WHERE request_num = '" + requestNum + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			if(rs.next()) return rs.getString(1);
@@ -200,7 +200,7 @@ public class DBAccessor {
 		try {
 			ArrayList<String> result = new ArrayList<>();
 			openConnection();
-			query = "SELECT request_num FROM requests";
+			query = "SELECT request_num FROM mktr_requests";
 			if(constraint != "") query += " WHERE status = '" + constraint + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
@@ -223,7 +223,7 @@ public class DBAccessor {
 	public static void updateStatus(String requestNum, String status, String approver) {
 		try {
 			openConnection();
-			query = "UPDATE requests SET status = ?, rejectReason = ?, approver = ? WHERE request_num = ?";
+			query = "UPDATE mktr_requests SET status = ?, rejectReason = ?, approver = ? WHERE request_num = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, status.substring(0,1));
 			ps.setString(2, status.substring(1));
@@ -242,41 +242,41 @@ public class DBAccessor {
 	 * Iterates through the list of items and adds them one at a time
 	 */
 	public static void addItems(ObservableList<Item> items) {
-		try {
-			openConnection();
-			
-			for(Item item : items) {
-				values = item.getItemStrings();
-				query = "INSERT into items (";
-				String questionMarks = "";
-				for (int i = 0; i < values.size(); i++) {
-					query += dbItemHeaders.get(i) + ", ";
-					questionMarks += "?, ";
-				}
-				
-				doubleValues = item.getItemDoubles();
-				for (int i = 0; i < doubleValues.size(); i++) {
-					query += dbItemHeaders.get(values.size()+i) + ", ";
-					questionMarks += "?, ";
-				}
-				query +=  "request_num) values (" + questionMarks + "?)";
-				
-				ps = con.prepareStatement(query);
-				for (int i = 0; i < values.size(); i++) {
-					ps.setString(i+1, values.get(i));
-				}
-				
-				for (int i = 0; i < doubleValues.size(); i++) {
-					ps.setDouble(i + values.size() + 1, doubleValues.get(i));
-				}
-				ps.setString(values.size() + doubleValues.size() + 1, item.getRequestNum());
-				ps.executeUpdate();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			closeConnection();
-		}
+//		try {
+//			openConnection();
+//			
+//			for(Item item : items) {
+//				values = item.getItemStrings();
+//				query = "INSERT into mktr_items (";
+//				String questionMarks = "";
+//				for (int i = 0; i < values.size(); i++) {
+//					query += dbItemHeaders.get(i) + ", ";
+//					questionMarks += "?, ";
+//				}
+//				
+//				doubleValues = item.getItemDoubles();
+//				for (int i = 0; i < doubleValues.size(); i++) {
+//					query += dbItemHeaders.get(values.size()+i) + ", ";
+//					questionMarks += "?, ";
+//				}
+//				query +=  "request_num) values (" + questionMarks + "?)";
+//				
+//				ps = con.prepareStatement(query);
+//				for (int i = 0; i < values.size(); i++) {
+//					ps.setString(i+1, values.get(i));
+//				}
+//				
+//				for (int i = 0; i < doubleValues.size(); i++) {
+//					ps.setDouble(i + values.size() + 1, doubleValues.get(i));
+//				}
+//				ps.setString(values.size() + doubleValues.size() + 1, item.getRequestNum());
+//				ps.executeUpdate();
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//			closeConnection();
+//		}
 	}
 	
 	/**
@@ -286,7 +286,7 @@ public class DBAccessor {
 	public static ObservableList<Item> getItems(String requestNum) {
 		try {
 			openConnection();
-			query = "SELECT * FROM items WHERE request_num = '" + requestNum + "'";
+			query = "SELECT * FROM mktr_items WHERE request_num = '" + requestNum + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			items.clear();
@@ -310,7 +310,7 @@ public class DBAccessor {
 	public static ObservableList<String> getCompanyNames() {
 		try {
 			openConnection();
-			query = "SELECT DISTINCT company FROM number_sku";
+			query = "SELECT DISTINCT company FROM mktr_number_sku";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			companyNames.clear();
@@ -334,7 +334,7 @@ public class DBAccessor {
 	public static ObservableList<String> getProductNumbers(String companyName, String type) {
 		try {
 			openConnection();
-			query = "SELECT " + type.toUpperCase() + " FROM number_sku WHERE company = '" + companyName + "'";
+			query = "SELECT " + type.toUpperCase() + " FROM mktr_number_sku WHERE company = '" + companyName + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			productNumbers.clear();
@@ -355,7 +355,7 @@ public class DBAccessor {
 	public static String getVL(String sku, String company) {
 		try {
 			openConnection();
-			query = "SELECT number FROM number_sku WHERE SKU = '" + sku + "' AND company = '" + company + "'";
+			query = "SELECT number FROM mktr_number_sku WHERE SKU = '" + sku + "' AND company = '" + company + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			if(rs.next()) return rs.getString(1);
@@ -370,7 +370,7 @@ public class DBAccessor {
 	public static String getSKU(String number, String company) {
 		try {
 			openConnection();
-			query = "SELECT SKU FROM number_sku WHERE number = '" + number + "' AND company = '" + company + "'";
+			query = "SELECT SKU FROM mktr_number_sku WHERE number = '" + number + "' AND company = '" + company + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			if(rs.next()) return rs.getString(1);
@@ -385,7 +385,7 @@ public class DBAccessor {
 	public static LinkedHashMap<String, String> getCompanyInfo(String company) {
 		try {
 			openConnection();
-			query = "SELECT * FROM customers WHERE company = '" + company + "'";
+			query = "SELECT * FROM mktr_customers WHERE company = '" + company + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			if(rs.next()) {
@@ -407,7 +407,7 @@ public class DBAccessor {
 	public static List<Double> getPrices(String model, String company) {
 		try {
 			openConnection();
-			query = "SELECT retailprice, originalcost FROM prices WHERE model = '" + model + "' AND company = '" + company + "'";
+			query = "SELECT retailprice, originalcost FROM mktr_prices WHERE model = '" + model + "' AND company = '" + company + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			prices.clear();
@@ -429,7 +429,7 @@ public class DBAccessor {
 		try {
 			openConnection();
 			for(int i = 0; i < model.size(); i++) {
-				query = "UPDATE prices SET retailprice = ?, originalcost = ? WHERE model = ? AND company = ?";
+				query = "UPDATE mktr_prices SET retailprice = ?, originalcost = ? WHERE model = ? AND company = ?";
 				ps = con.prepareStatement(query);
 				ps.setDouble(1, (double)promoPrice.get(i));
 				ps.setDouble(2, (double)promoCost.get(i));
@@ -467,8 +467,8 @@ public class DBAccessor {
 	public static void openConnection() {
 		try {
 			Class.forName(MYSQL_DRIVER);
-			System.out.println("Class Loaded....");
-	        con = DriverManager.getConnection(MYSQL_URL,"root","Daniscool2");
+			System.out.println("OLD DATABASE BEING ACCESSED");
+	        con = DriverManager.getConnection(MYSQL_URL,"Dan","");
 	        System.out.println("Connected to the database....");
 		} catch (ClassNotFoundException e) {
 	        System.out.println("ClassNotFoundException:\n"+e.toString());

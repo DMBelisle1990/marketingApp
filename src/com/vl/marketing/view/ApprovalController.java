@@ -1,11 +1,12 @@
 package com.vl.marketing.view;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.vl.marketing.db.DBAccessor;
+import com.vl.marketing.db.DBA;
+import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;
-import com.vl.marketing.model.Request;
 import com.vl.marketing.util.AlertGenerator;
 
 import javafx.collections.FXCollections;
@@ -13,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
@@ -33,7 +33,8 @@ public class ApprovalController {
 	@FXML private TableColumn<Item, Number> allowance;
 	@FXML private Label companyName;
 	@FXML private Label address;
-	@FXML private Label cityState;
+	@FXML private Label city;
+	@FXML private Label state;
 	@FXML private Label zip;
 	@FXML private Label webAddress;
 	@FXML private Label contactName;
@@ -63,8 +64,11 @@ public class ApprovalController {
 	@FXML private TextField aFaxField;
 	
 	private Stage dialogStage;
-	private Request request;
+	private Authorization authorization;
+	private DBA database = new DBA();
+	private DashboardController caller;
 	private ObservableList<Item> items = FXCollections.observableArrayList();
+	private LinkedHashMap<String, String> customerInfo = new LinkedHashMap<String, String>();
 	
 	@FXML
 	private void initialize() {
@@ -82,80 +86,89 @@ public class ApprovalController {
 	}
 	
 	
-	public void setRequest(Request request) {
-		this.request = request;
-		setStatus();
-		companyName.setText(request.getCompanyName());
-		address.setText(request.getAddress());
-		cityState.setText(request.getcityState());
-		zip.setText(request.getZip());
-		webAddress.setText(request.getWebAddress());
-		contactName.setText(request.getContactName());
-		title.setText(request.getTitle());
-		fax.setText(request.getFax());
-		phone.setText(request.getPhone());
-		email.setText(request.getEmail());
-		description.setText(request.getDescription());
-		coopType.setText(request.getCoopType());
-		startDate.setText(request.getStartDate());
-		if(request.getEndDate().equals("")) {
-			optionalDate.setText("");
-			effectiveDate.setText("  Effective Date:");
-		} else {
-			endDate.setText(request.getEndDate());
-		}
+	public void setAuthorization(Authorization authorization) {
+		this.authorization = authorization;
+		// setStatus();
+		companyName.setText(authorization.getCompany());
+		customerInfo = database.getCustomerInfo(authorization.getCompany());
+		address.setText(customerInfo.get("address"));
+		city.setText(customerInfo.get("city"));
+		state.setText(customerInfo.get("state"));
+		zip.setText(customerInfo.get("zip"));
+		webAddress.setText(customerInfo.get("webAddress"));
+		contactName.setText(customerInfo.get("contact"));
+		title.setText(customerInfo.get("title"));
+		fax.setText(customerInfo.get("fax"));
+		phone.setText(customerInfo.get("phone"));
+		email.setText(customerInfo.get("email"));
+		description.setText(authorization.getPromoDescription());
+		coopType.setText(authorization.getPromoType());
+//		startDate.setText(request.getStartDate());
+//		if(request.getEndDate().equals("")) {
+//			optionalDate.setText("");
+//			effectiveDate.setText("  Effective Date:");
+//		} else {
+//			endDate.setText(request.getEndDate());
+//		}
 		setApprover();
-		for(Item i : DBAccessor.getItems(request.getRequestNum())) {
+		for(Item i : database.getItems(authorization.getVlMarketingNum())) {
 			items.add(i);
 		}
 	}
 	
 	private void setApprover() {
-		aNameField.setText(request.getApprover());
+		// aNameField.setText(request.getApprover());
 	}
 	
-	private void setStatus() {
-		if(request.getStatus().equals("P")) {
-			status.setText("Pending");
-			status.setTextFill(Color.web("#e08d18"));
-		} else if(request.getStatus().equals("A")) {
-			status.setText("Approved");
-			status.setTextFill(Color.web("green"));
-		} else if(request.getStatus().equals("R")) {
-			status.setText("Rejected");
-			status.setTextFill(Color.web("red"));
-		}
-	}
+//	private void setStatus() {
+//		if(request.getStatus().equals("P")) {
+//			status.setText("Pending");
+//			status.setTextFill(Color.web("#e08d18"));
+//		} else if(request.getStatus().equals("A")) {
+//			status.setText("Approved");
+//			status.setTextFill(Color.web("green"));
+//		} else if(request.getStatus().equals("R")) {
+//			status.setText("Rejected");
+//			status.setTextFill(Color.web("red"));
+//		}
+//	}
 	
 	@FXML
 	private void handleReject() {
 		String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
 		if(reason != "NO_MSG") {
-			DBAccessor.updateStatus(request.getRequestNum(),"R" + reason, aNameField.getText());
+			database.updateStatus(authorization.getVlMarketingNum(), "rejected");
+			caller.refreshTable();
 			handleCancel();
 		}
 	}
-	
+//	
 	@FXML
 	private void handleApprove() {
 		if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
-			DBAccessor.updateStatus(request.getRequestNum(), "A", aNameField.getText());
-			
-			if(coopType.getText().equals("Price Protection")) {
-				List<String> skuData = new ArrayList<>();
-				List<Number> promoPriceData = new ArrayList<>();
-				List<Number> promoCostData = new ArrayList<>();
-				for (Item item : itemTable.getItems()) {
-				    skuData.add(sku.getCellObservableValue(item).getValue());
-				    promoPriceData.add(promoPrice.getCellObservableValue(item).getValue());
-				    promoCostData.add(promoCost.getCellObservableValue(item).getValue());
-				}
-				DBAccessor.priceProtectionUpdate(companyName.getText(), skuData, promoPriceData, promoCostData);
-			}
-			handleCancel();
+			database.updateStatus(authorization.getVlMarketingNum(), "approved");
+			caller.refreshTable();
+
+//			THIS IS THE PRICE UPDATE SECTION
+//			if(coopType.getText().equals("Price Protection")) {
+//				List<String> skuData = new ArrayList<>();
+//				List<Number> promoPriceData = new ArrayList<>();
+//				List<Number> promoCostData = new ArrayList<>();
+//				for (Item item : itemTable.getItems()) {
+//				    skuData.add(sku.getCellObservableValue(item).getValue());
+//				    promoPriceData.add(promoPrice.getCellObservableValue(item).getValue());
+//				    promoCostData.add(promoCost.getCellObservableValue(item).getValue());
+//				}
+//				DBAccessor.priceProtectionUpdate(companyName.getText(), skuData, promoPriceData, promoCostData);
+//			}
+		handleCancel();
 		}
 	}
 	
+	
+	public void setCaller(DashboardController caller) {
+		this.caller = caller;
+	}
 	
 	private void handleCancel() {
 		dialogStage.close();

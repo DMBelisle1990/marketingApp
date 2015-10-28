@@ -7,40 +7,72 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.cell.*?>
+<?import com.vl.marketing.util.CheckBoxCellFactory?>
 
 <AnchorPane id="Window" prefHeight="699.0" prefWidth="1200.0" stylesheets="@myCss.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.DashboardController">
    <children>
-      <GridPane layoutX="96.0" layoutY="26.0" prefHeight="60.0" prefWidth="619.0">
+      <GridPane layoutX="30.0" layoutY="27.0" prefHeight="60.0" prefWidth="988.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="40.0" />
+       	    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="15.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-         	<TextField fx:id="companies" maxWidth="150.0" minWidth="150.0" onKeyReleased="#filter" prefWidth="150.0" promptText="Company" />
-            <ComboBox fx:id="promoTypes" onAction="#filter" prefWidth="150.0" promptText="Promo Type" GridPane.rowIndex="1" />
-            <ComboBox fx:id="vlMarketingNums" prefWidth="150.0" promptText="VL Marketing #" GridPane.columnIndex="1" />
-            <ComboBox fx:id="marketingNums" prefWidth="150.0" promptText="Marketing #" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ComboBox fx:id="states" onAction="#filter" prefWidth="150.0" promptText="Status" GridPane.columnIndex="2" />
-            <ComboBox fx:id="items" prefWidth="150.0" promptText="Containing Items" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <DatePicker fx:id="startDates" onAction="#filter" prefWidth="150.0" promptText="Start Date" GridPane.columnIndex="3" />
-            <DatePicker fx:id="endDates" onAction="#filter" prefWidth="150.0" promptText="End Date" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+         	<TextField fx:id="companies" maxWidth="150.0" minWidth="150.0" onKeyReleased="#filter" prefWidth="150.0" GridPane.columnIndex="1" />
+            <ComboBox fx:id="promoTypes" onAction="#filter" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
+            <TextField fx:id="vlMarketingNums" maxWidth="150.0" minWidth="150.0" onKeyReleased="#filter" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+            <TextField fx:id="marketingNums" maxWidth="150.0" minWidth="150.0" onKeyReleased="#filter" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <ComboBox fx:id="states" onAction="#filter" prefWidth="150.0" GridPane.columnIndex="5">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
+            <ComboBox fx:id="items" prefWidth="150.0" GridPane.columnIndex="5" GridPane.rowIndex="1">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
+            <DatePicker fx:id="startDates" onAction="#filter" promptText="m/d/yyyy" prefWidth="150.0" GridPane.columnIndex="7">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></DatePicker>
+            <DatePicker fx:id="endDates" onAction="#filter" promptText="m/d/yyyy" prefWidth="150.0" GridPane.columnIndex="7" GridPane.rowIndex="1">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></DatePicker>
+            <Label text="    Company" />
+            <Label text="Promo Type" GridPane.rowIndex="1" />
+            <Label text="VL Marketing #" GridPane.columnIndex="2" />
+            <Label text="     Marketing #" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label text="  Status" GridPane.columnIndex="4" />
+            <Label text="   Items" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Label text="Start Date" GridPane.columnIndex="6" />
+            <Label text=" End Date" GridPane.columnIndex="6" GridPane.rowIndex="1" />
          </children>
       </GridPane>
-      <Label layoutX="28.0" layoutY="17.0" text="Filter By:">
+      <Label layoutX="30.0" layoutY="6.0" text="Filter By:">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <TableView fx:id="table" layoutX="500.0" layoutY="214.0" prefHeight="200.0" prefWidth="331.0" stylesheets="@myCss.css" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+      <TableView fx:id="table" editable="true" layoutX="500.0" layoutY="214.0" prefHeight="200.0" prefWidth="331.0" stylesheets="@myCss.css" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
         <columns>
-          <TableColumn fx:id="selectAll" maxWidth="42.0" minWidth="42.0" prefWidth="42.0" />
-          <TableColumn fx:id="customer" prefWidth="120.0" text="Customer" />
+          	<TableColumn fx:id="selectAll" editable="true" maxWidth="42.0" minWidth="42.0" prefWidth="42.0">
+          		<cellValueFactory><PropertyValueFactory property="checked" /></cellValueFactory>
+				<cellFactory><CheckBoxCellFactory /></cellFactory>
+			</TableColumn> 
+          	<TableColumn fx:id="customer" prefWidth="120.0" text="Customer" />
             <TableColumn fx:id="promoType" prefWidth="120.0" text="Promo Type" />
             <TableColumn fx:id="promoDescription" prefWidth="120.0" text="Promo Description" />
             <TableColumn fx:id="startDate" prefWidth="120.0" text="Start Date" />
@@ -65,19 +97,19 @@
          <children>
             <ButtonBar prefHeight="40.0" prefWidth="200.0">
               <buttons>
-                <Button mnemonicParsing="false" text="Authorize">
+                <Button fx:id ="authorize" onAction="#authorizeAll" mnemonicParsing="false" text="Authorize">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button mnemonicParsing="false" text="Reject">
+                  <Button fx:id ="reject" onAction="#rejectAll" mnemonicParsing="false" text="Reject">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button mnemonicParsing="false" text="Delete">
+                  <Button fx:id ="delete" onAction="#deleteAll" mnemonicParsing="false" text="Delete">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
-                  <Button mnemonicParsing="false" text="Email">
+                  <Button fx:id ="email"  mnemonicParsing="false" text="Email">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
@@ -99,7 +131,7 @@
                </cursor></Button>
          </children>
       </GridPane>
-      <Button fx:id="reset" layoutX="728.0" layoutY="41.0" mnemonicParsing="false" onAction="#clearFilters" prefWidth="25.0" style="-fx-background-color: transparent;" text="X" textFill="#8a8484" translateX="-2.0" translateY="3.0">
+      <Button fx:id="reset" layoutX="1020.0" layoutY="42.0" mnemonicParsing="false" onAction="#clearFilters" prefWidth="25.0" style="-fx-background-color: transparent;" text="X" textFill="#8a8484" translateX="-2.0" translateY="3.0">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -107,6 +139,6 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Label layoutX="751.0" layoutY="48.0" text="Reset Filters" textFill="#a4a2a2" />
+      <Label layoutX="1043.0" layoutY="49.0" text="Reset Filters" textFill="#a4a2a2" />
    </children>
 </AnchorPane>

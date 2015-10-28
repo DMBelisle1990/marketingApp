@@ -64,14 +64,14 @@
                         </Label>
                         <Label text="  Company Name:" GridPane.rowIndex="1" />
                         <Label text="  Address:" GridPane.rowIndex="2" />
-                        <Label text="  City, State:" GridPane.rowIndex="3" />
-                        <Label text="  Zip:" GridPane.rowIndex="4" />
+                        <Label text="  City:" GridPane.rowIndex="3" />
+                        <Label text="  State, Zip:" GridPane.rowIndex="4" />
                         <Label text="  Web Address:" GridPane.rowIndex="5" />
                         <Label fx:id="companyName" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label fx:id="address" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label fx:id="cityState" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label fx:id="city" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label fx:id="title" textFill="#dd4040" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                        <Label fx:id="zip" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label fx:id="zip" textFill="#dd4040" translateX="45.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <Label fx:id="webAddress" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label text="  Email:" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                         <Label text="  Fax:" GridPane.columnIndex="2" GridPane.rowIndex="4" />
@@ -102,6 +102,7 @@
                         <Label fx:id="description" textFill="#dd4040" GridPane.columnIndex="5" GridPane.rowIndex="3" />
                         <Label fx:id="payment" textFill="#dd4040" GridPane.columnIndex="5" GridPane.rowIndex="2" />
                         <Label fx:id="coopType" textFill="#dd4040" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                        <Label fx:id="state" textFill="#dd4040" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                      </children>
                      <GridPane.margin>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -174,8 +175,14 @@
             </GridPane>
             <ButtonBar layoutX="570.0" layoutY="762.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0">
                <buttons>
-                <Button mnemonicParsing="false" onAction="#handleReject" text="Reject" />
-                  <Button mnemonicParsing="false" onAction="#handleApprove" text="Approve" />
+                <Button mnemonicParsing="false" onAction="#handleReject" text="Reject">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button mnemonicParsing="false" onAction="#handleApprove" text="Approve">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                </buttons>
             </ButtonBar>
             <Label layoutX="32.0" layoutY="772.0" text="CURRENT STATUS:">

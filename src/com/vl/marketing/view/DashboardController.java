@@ -1,32 +1,46 @@
 package com.vl.marketing.view;
 
+import java.awt.Checkbox;
 import java.util.ArrayList;
-
 import org.controlsfx.control.textfield.TextFields;
-
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.util.ComboBoxUtil;
-import com.vl.marketing.util.DummyData;
+import com.vl.marketing.util.PDFGenerator;
+import com.vl.marketing.util.SendMailTLS;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.converter.NumberStringConverter;
 
 public class DashboardController {
 
 	// Components of the main authorization table
 	@FXML private TableView<Authorization> table;
-	@FXML private TableColumn<String, CheckBox> selectAll;
+	@FXML private TableColumn<Authorization, CheckBox> selectAll;
 	@FXML private TableColumn<Authorization, String> customer;
 	@FXML private TableColumn<Authorization, String> promoType;
 	@FXML private TableColumn<Authorization, String> promoDescription;
@@ -40,46 +54,76 @@ public class DashboardController {
 	
 	// ComboBoxes for the filter menu
 	@FXML private TextField companies;
+	@FXML private TextField vlMarketingNums;
+	@FXML private TextField marketingNums;
 	@FXML private ComboBox<String> promoTypes;
 	@FXML private ComboBox<String> states;
 	@FXML private ComboBox<String> items;
-	@FXML private ComboBox<String> vlMarketingNums;
-	@FXML private ComboBox<String> marketingNums;
 	@FXML private DatePicker startDates;
 	@FXML private DatePicker endDates;
 	
+	// Buttons
+	@FXML private Button authorize;
+	@FXML private Button reject;
+	@FXML private Button delete;
+	@FXML private Button email;
+	@FXML private Button reset;
+	
 	// List of authorizations to be displayed in table
-	private static ObservableList<Authorization> authorizations = FXCollections.observableArrayList();
+	private ObservableList<Authorization> authorizations = FXCollections.observableArrayList();
 	
 	// DataBase Access
 	private DBA database = new DBA();
 	
 	// Other Variables
 	private ComboBoxUtil cb;
-	@FXML private Button reset;
+	private String clickedStatus = "";
 	private Main main;
+	private CheckBox checkBox = new CheckBox();
 	
 	
 	@FXML
 	private void initialize() {
 		// Link the authorizations list to the table
 		authorizations = database.getAuthorizations();
+		
+		selectAll.setGraphic(checkBox);
+
+		
+		TableColumn<Authorization, String> customer = new TableColumn<Authorization, String>("company");
+		customer.setCellValueFactory(new PropertyValueFactory<Authorization, String>("company"));
+
+		TableColumn<Authorization, String> promoType = new TableColumn<Authorization, String>("promoType");
+		promoType.setCellValueFactory(new PropertyValueFactory<Authorization, String>("promoType"));
+
+		TableColumn<Authorization, String> promoDescription = new TableColumn<Authorization, String>("promoDescription");
+		promoDescription.setCellValueFactory( new PropertyValueFactory<Authorization, String>("promoDescription"));
+
+		TableColumn<Authorization, String> startDate = new TableColumn<Authorization, String>("startDate");
+		startDate.setCellValueFactory(new PropertyValueFactory<Authorization, String>("startDate"));
+
+		TableColumn<Authorization, String> endDate = new TableColumn<Authorization, String>("endDate");
+		endDate.setCellValueFactory(new PropertyValueFactory<Authorization, String>("endDate"));
+
+		TableColumn<Authorization, Number> forecast = new TableColumn<Authorization, Number>("forecast");
+		forecast.setCellValueFactory(new PropertyValueFactory<Authorization, Number>("forecast"));
+
+		TableColumn<Authorization, Number> actual = new TableColumn<Authorization, Number>("actual");
+		actual.setCellValueFactory(new PropertyValueFactory<Authorization, Number>("actual"));
+
+		TableColumn<Authorization, String> vlMarketingNum = new TableColumn<Authorization, String>("vlMarketingNum");
+		vlMarketingNum.setCellValueFactory(new PropertyValueFactory<Authorization, String>("vlMarketingNum"));
+
+		TableColumn<Authorization, String> marketingNum = new TableColumn<Authorization, String>("marketingNum");
+		marketingNum.setCellValueFactory(new PropertyValueFactory<Authorization, String>("marketingNum"));
+
+		TableColumn<Authorization, String> status = new TableColumn<Authorization, String>("status");
+		status.setCellValueFactory(new PropertyValueFactory<Authorization, String>("status"));
+
 		table.setItems(authorizations);
-		
-		// Bind the authorization properties to their respective table column
-		selectAll.setGraphic(new CheckBox());
-		customer.setCellValueFactory(cellData -> cellData.getValue().companyProperty());
-		promoType.setCellValueFactory(cellData -> cellData.getValue().promoTypeProperty());
-		promoDescription.setCellValueFactory(cellData -> cellData.getValue().promoDescriptionProperty());
-		startDate.setCellValueFactory(cellData -> cellData.getValue().startDateProperty());
-		endDate.setCellValueFactory(cellData -> cellData.getValue().endDateProperty());
-		forecast.setCellValueFactory(cellData -> cellData.getValue().forecastProperty());
-		actual.setCellValueFactory(cellData -> cellData.getValue().actualProperty());
-		vlMarketingNum.setCellValueFactory(cellData -> cellData.getValue().vlMarketingNumProperty());
-		marketingNum.setCellValueFactory(cellData -> cellData.getValue().marketingNumProperty());
-		status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
-		
-		// MOVE INTO SEPERATE CLASS/METHOD
+		table.getColumns().setAll(selectAll, customer, promoType, promoDescription, startDate, endDate, forecast, actual, vlMarketingNum, marketingNum, status);
+				
+		// TODO MOVE INTO SEPERATE CLASS/METHOD
 		status.setCellFactory(column -> {
 			return new TableCell<Authorization, String>() {
 				@Override
@@ -88,42 +132,80 @@ public class DashboardController {
 					if(status == null) {
 						setStyle("");
 					} else {
-						if (status.equals("rejected")) {
-							setStyle("-fx-text-fill: red");
-						} else if(status.equals("approved")) {
-							setStyle("-fx-text-fill: lightgreen");
-						} else if(status.equals("accepted")) {
-							setStyle("-fx-text-fill: green");
-						} else if(status.equals("pending")) {
-							setStyle("-fx-text-fill: orange");
-						} else if(status.equals("archived")) {
-							setStyle("-fx-text-fill: grey");
-						} else if(status.equals("running")) {
-							setStyle("-fx-text-fill: blue");
-						} else {
-							setStyle("-fx-text-fill: black");
-						}
+						if(status.equals("rejected")) 	   setStyle("-fx-text-fill: red");
+						else if(status.equals("approved")) setStyle("-fx-text-fill: lightgreen");
+						else if(status.equals("accepted")) setStyle("-fx-text-fill: green");
+						else if(status.equals("pending"))  setStyle("-fx-text-fill: orange");
+						else if(status.equals("archived")) setStyle("-fx-text-fill: grey");
+						else if(status.equals("running"))  setStyle("-fx-text-fill: blue");
+						else 							   setStyle("-fx-text-fill: black");
 					}
 				}
 			};
 		});
-		
+				
 		// Populate the ComboBoxes based on authorizations
 		cb = new ComboBoxUtil(authorizations);
 		populateFilterMenu();
 		
+		actual.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
+
+		actual.setOnEditCommit(new EventHandler<CellEditEvent<Authorization,Number>>() {
+			@Override public void handle(CellEditEvent t) {
+				Authorization k = (Authorization) t.getTableView().getItems().get(t.getTablePosition().getRow());
+			}});
+
+		
+//		table.setOnMouseClicked(event -> {
+//			TablePosition tp = table.getFocusModel().getFocusedCell();
+//			System.out.println(tp);
+//			table.edit(tp.getRow(),  tp.getTableColumn());
+//		});
+
+		// TODO Replace isShiftDown() with proper login system
+		table.setRowFactory( tv -> {
+			TableRow<Authorization> row = new TableRow<>();
+			row.setOnMouseClicked(event -> {
+				Authorization rowData = row.getItem();
+				if (!event.isAltDown() && !event.isShiftDown() && event.getClickCount() == 2 && (!row.isEmpty()) ) {
+					setClickedStatus(rowData.getStatus());
+					main.showNewAuthorization(this, rowData);
+				} else if(event.isShiftDown() && event.getClickCount() == 2 && (!row.isEmpty())) {
+					main.showApproval(this, rowData);
+				} else if (event.isAltDown() && event.getClickCount() == 2 && (!row.isEmpty())) {
+					PDFGenerator pdfGen = new PDFGenerator();
+					try {
+						pdfGen.setFields(rowData.getCompany(), rowData.getStartDate(), rowData.getEndDate(), rowData.getForecast(), rowData.getStatus(), rowData.getVlMarketingNum(), rowData.getActual(), rowData.getPromoDescription(), rowData.getMarketingNum(), rowData.getPromoType());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+			
+			return row ;
+		});
+
+
+		checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				for(int i = 0; i < authorizations.size(); i++){
+					table.getSelectionModel().select(i, status);
+					table.getSelectionModel().getSelectedItem().setChecked(newValue);
+				}			
+			}
+		});
+		
+		
 	}
 	
-	//TODO see autoComplete textfield below
+	
 	private void populateFilterMenu() {
-		// If I stick with a textField refine this process
-		TextFields.bindAutoCompletion(companies, DummyData.getCompanies());
-		
+		TextFields.bindAutoCompletion(companies, database.getCustomerNames());
+		TextFields.bindAutoCompletion(vlMarketingNums, database.getMarketingNums("vl"));
+		TextFields.bindAutoCompletion(marketingNums, database.getMarketingNums(""));
 		promoTypes.getItems().addAll(cb.getPromoTypes());
 		states.getItems().addAll(cb.getStates());
-		vlMarketingNums.getItems().addAll(cb.getVlMarketingNums());
-		marketingNums.getItems().addAll(cb.getMarketingNums());
-		
 	}
 	
 	
@@ -136,7 +218,9 @@ public class DashboardController {
 	
 	@FXML 
 	private void filter() {
-		// Rebuild list from database in case a new authorization has been submitted
+		// sendEmail("dbelisle@visual-land.com");
+		
+		// Rebuilds list from database in case a new authorization has been submitted
 		authorizations = database.getAuthorizations();
 		table.setItems(authorizations);
 		ArrayList<Authorization> toRemove = new ArrayList<Authorization>();
@@ -162,32 +246,127 @@ public class DashboardController {
 	private void clearFilters() {
 		companies.setText("");
 		promoTypes.getSelectionModel().clearSelection();
-		vlMarketingNums.getSelectionModel().clearSelection();
-		marketingNums.getSelectionModel().clearSelection();
+		vlMarketingNums.setText("");
+		marketingNums.setText("");
 		states.getSelectionModel().clearSelection();
 		startDates.setValue(null);
 		endDates.setValue(null);
+		refreshTable();
 	}
 	
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
-	//////////                 END OF FILTERS                   //////////
+	//////////                 BUTTON METHODS                   //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
 	
+	
+	@FXML 
+	private void deleteAll() {
+		ObservableList<Authorization> toDelete = FXCollections.observableArrayList();
+		Authorization auth;
+		
+		for(int i = 0; i < authorizations.size(); i++){
+			table.getSelectionModel().select(i);
+			auth = table.getSelectionModel().getSelectedItem();
+			
+			// Only pending and rejected authorizations will be rejected
+			if(auth.getChecked() == true && (auth.getStatus().equals("pending") || auth.getStatus().equals("rejected"))) {
+				toDelete.add(auth);
+			};
+		}	
+		if(toDelete.size() > 0) {
+			database.removeAuthorizations(toDelete);
+			refreshTable();
+			toDelete.clear();
+		}
+	}
+	
+	
+	@FXML
+	private void authorizeAll() {
+		ObservableList<Authorization> toAuthorize = FXCollections.observableArrayList();
+		Authorization auth;
+		
+		for(int i = 0; i < authorizations.size(); i++){
+			table.getSelectionModel().select(i);
+			auth = table.getSelectionModel().getSelectedItem();
+			if(auth.getChecked() == true && auth.getStatus().equals("pending") || auth.getStatus().equals("rejected")) {
+				toAuthorize.add(auth);					
+			};
+		}	
+		
+		if(toAuthorize.size() > 0) {
+			database.updateStatus(toAuthorize, "approved");
+			refreshTable();
+			toAuthorize.clear();
+		}
+	}
+	
+	
+	@FXML
+	private void rejectAll() {
+		ObservableList<Authorization> toReject = FXCollections.observableArrayList();
+		Authorization auth;
+		
+		for(int i = 0; i < authorizations.size(); i++){
+			table.getSelectionModel().select(i);
+			auth = table.getSelectionModel().getSelectedItem();
+			if(auth.getChecked() == true && auth.getStatus().equals("pending")) {
+				toReject.add(auth);					
+			};
+		}	
+		
+		if(toReject.size() > 0) {
+			database.updateStatus(toReject, "rejected");
+			refreshTable();
+			toReject.clear();
+		}
+	}
+	
+	
+
+	private void sendEmail(String to) {
+		SendMailTLS.send(to);
+	}
+	
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////													//////////
+	//////////                      OTHER			            //////////
+	////////// 													//////////
+	//////////////////////////////////////////////////////////////////////
+	
+	public void setClickedStatus(String status) {
+		clickedStatus = status;
+	}
+	
+	public String getClickedStatus() {
+		return clickedStatus;
+	}
+	
 	@FXML
 	private void newRequest() {
-		main.showRequestNew();
+		setClickedStatus("");
+		main.showNewAuthorization(this, null);
 	}
+	
+	public void refreshTable() {
+		authorizations = database.getAuthorizations();
+		table.setItems(authorizations);
+		filter();
+		selectAll.setGraphic(new CheckBox());
+	}
+	
 	
 	public void setMain(Main main) {
 		this.main = main;
 	}
 	
-	public static void addAuthorization(Authorization a) {
+	public void addAuthorization(Authorization a) {
 		authorizations.add(a);
+		database.addAuthorization(a);
 	}
-	
 	
 	
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -36,9 +37,18 @@
             <Label text="Promo Cost" GridPane.rowIndex="6" />
             <Label text="BER" GridPane.rowIndex="8" />
             <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-            <ComboBox fx:id="vlField" onHidden="#setSKU" prefWidth="150.0" GridPane.columnIndex="1" />
-            <ComboBox fx:id="skuField" onHidden="#setVL" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <ComboBox fx:id="typeBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ComboBox fx:id="vlField" onHidden="#setSKU" prefWidth="150.0" GridPane.columnIndex="1">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
+            <ComboBox fx:id="skuField" onHidden="#setVL" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
+            <ComboBox fx:id="typeBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></ComboBox>
             <TextField fx:id="originalSRPField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="normalCostField" onKeyReleased="#calculateBER" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <TextField fx:id="promoPriceField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
@@ -50,6 +60,9 @@
             <Label text="Other Allowance" GridPane.rowIndex="10" />
          </children>
       </GridPane>
-      <Button layoutX="261.0" layoutY="356.0" mnemonicParsing="false" onAction="#handleAdd" prefWidth="70.0" text="Add" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="8.0" />
+      <Button layoutX="261.0" layoutY="356.0" mnemonicParsing="false" onAction="#handleAdd" prefWidth="70.0" text="Add" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="8.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
    </children>
 </AnchorPane>

@@ -1,20 +1,24 @@
 package com.vl.marketing;
 
 import java.io.IOException;
-import com.vl.marketing.model.Request;
+
+import com.vl.marketing.model.Authorization;
+import com.vl.marketing.util.DummyData;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.DashboardController;
 import com.vl.marketing.view.ItemNewController;
-import com.vl.marketing.view.RequestNewController;
-import com.vl.marketing.view.RequestOverviewController;
-
+import com.vl.marketing.view.NewAuthorizationController;
+import com.vl.marketing.view.NewContactController;
+import com.vl.marketing.view.NewCustomerController;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Main extends Application {
 	
@@ -22,18 +26,18 @@ public class Main extends Application {
 	private BorderPane rootLayout;
 	private BorderPane requestNew;
 	private BorderPane approval;
+	private Boolean windowAlreadyOpen = false;
 	
 	
 	@Override
 	public void start(Stage primaryStage) {
 		// Uncomment to generate more data, DELETE ONCE USING ACTUAL DATA
-		// DummyData dummy = new DummyData();
-		// dummy.populateTable(1000);
+		//DummyData dummy = new DummyData();
+		//dummy.populateTable(1000);
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Dashboard");
 		
 		initRootLayout();
-		
 		showDashBoard();
 	}
 	
@@ -78,13 +82,12 @@ public class Main extends Application {
 	/**
 	 * Launches the New Request Form
 	 */
-	public void showRequestNew() {
+	public void showNewAuthorization(DashboardController caller, Authorization auth) {
 		try {
 			// Load request overview.
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("view/RequestNew.fxml"));
 			requestNew = (BorderPane) loader.load();
-			// rootLayout.setCenter(requestNew);
 			
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("New Request");
@@ -93,8 +96,12 @@ public class Main extends Application {
 			Scene scene = new Scene(requestNew);
 			dialogStage.setScene(scene);
 	
-			RequestNewController controller = loader.getController();
+			NewAuthorizationController controller = loader.getController();
 			controller.setMainApp(this);
+			controller.setCaller(caller);
+			controller.setEditing();
+			controller.setDialogStage(dialogStage);
+			if(auth != null) controller.setAuthorization(auth);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -104,7 +111,7 @@ public class Main extends Application {
 	/**
 	 * Launches the Approver View of the selected Authorization
 	 */
-	public void showApproval(Request request) {
+	public void showApproval(DashboardController caller, Authorization authorization) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("view/Approval.fxml"));
@@ -118,7 +125,8 @@ public class Main extends Application {
 			dialogStage.setScene(scene);
 	
 			ApprovalController controller = loader.getController();
-			controller.setRequest(request);
+			controller.setAuthorization(authorization);
+			controller.setCaller(caller);
 			controller.setDialogStage(dialogStage);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
@@ -126,59 +134,113 @@ public class Main extends Application {
 		}
 	}
 	
-	/**
-	 * Launches an Overview of all Requests
-	 */
-	public void showRequestOverview(RequestNewController rnc) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/RequestOverview.fxml"));
-			BorderPane page = (BorderPane) loader.load();
-			
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Requests");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(primaryStage);
-			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
-			
-			RequestOverviewController controller = loader.getController();
-			controller.setCaller(rnc);
-			controller.setDialogStage(dialogStage);
-			dialogStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * Launches a small menu used to attach items to a marketing authorization
 	 * @param rnc : The associated request form
 	 */
-	public void showItemNew(RequestNewController rnc) {
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("view/ItemNew.fxml"));
-			AnchorPane page = (AnchorPane) loader.load();
-			
-			Stage dialogStage = new Stage();
-			dialogStage.setTitle("New Item");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
-			dialogStage.initOwner(primaryStage);
-			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
-			
-			ItemNewController controller = loader.getController();
-			controller.setCaller(rnc);
-			controller.setDialogStage(dialogStage);
-			dialogStage.showAndWait();
-		} catch (IOException e) {
-			e.printStackTrace();
+	public void showItemNew(NewAuthorizationController nac) {
+		if(windowAlreadyOpen == false) {
+			try {
+				FXMLLoader loader = new FXMLLoader();
+				loader.setLocation(Main.class.getResource("view/ItemNew.fxml"));
+				AnchorPane page = (AnchorPane) loader.load();
+
+				Stage dialogStage = new Stage();
+				dialogStage.setTitle("New Item");
+				dialogStage.initModality(Modality.WINDOW_MODAL);
+				dialogStage.initOwner(primaryStage);
+				Scene scene = new Scene(page);
+				dialogStage.setScene(scene);
+
+				windowAlreadyOpen = true;
+				dialogStage.setOnHidden(new EventHandler<WindowEvent>() {
+					@Override
+					public void handle(WindowEvent event) {
+						windowAlreadyOpen = false;
+					}
+				});
+
+				ItemNewController controller = loader.getController();
+				controller.setCaller(nac);
+				controller.setDialogStage(dialogStage);
+				dialogStage.showAndWait();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void showAddCustomer() {
+
+		if(windowAlreadyOpen == false) {
+			try {
+				FXMLLoader loader = new FXMLLoader();
+				loader.setLocation(Main.class.getResource("view/AddCustomer.fxml"));
+				AnchorPane page = (AnchorPane) loader.load();
+
+				Stage dialogStage = new Stage();
+				dialogStage.setTitle("New Customer");
+				dialogStage.initModality(Modality.WINDOW_MODAL);
+				dialogStage.initOwner(primaryStage);
+				Scene scene = new Scene(page);
+				dialogStage.setScene(scene);
+
+				windowAlreadyOpen = true;
+				dialogStage.setOnHidden(new EventHandler<WindowEvent>() {
+					@Override
+					public void handle(WindowEvent event) {
+						windowAlreadyOpen = false;
+					}
+				});
+
+				NewCustomerController controller = loader.getController();
+				controller.setDialogStage(dialogStage);
+				dialogStage.showAndWait();
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void showAddContact() {
+		if(windowAlreadyOpen == false) {
+			try {
+				FXMLLoader loader = new FXMLLoader();
+				loader.setLocation(Main.class.getResource("view/AddContact.fxml"));
+				AnchorPane page = (AnchorPane) loader.load();
+
+				Stage dialogStage = new Stage();
+				dialogStage.setTitle("New Contact");
+				dialogStage.initModality(Modality.WINDOW_MODAL);
+				dialogStage.initOwner(primaryStage);
+				Scene scene = new Scene(page);
+				dialogStage.setScene(scene);
+
+				windowAlreadyOpen = true;
+				dialogStage.setOnHidden(new EventHandler<WindowEvent>() {
+					@Override
+					public void handle(WindowEvent event) {
+						windowAlreadyOpen = false;
+					}
+				});
+
+				NewContactController controller = loader.getController();
+				controller.setDialogStage(dialogStage);
+				dialogStage.showAndWait();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	public Stage getPrimaryStage() {
 		return primaryStage;
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
 	}
 
 }

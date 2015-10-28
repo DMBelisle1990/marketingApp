@@ -25,6 +25,11 @@ public class ComboBoxUtil {
 		}
 	}
 	
+	public ComboBoxUtil() {
+		
+	}
+	
+	
 	public Set<String> getCustomers() {
 		return customers;
 	}
@@ -47,13 +52,21 @@ public class ComboBoxUtil {
 		return states;
 	}
 	
+	public Set<String> getStateAbbr() {
+		Set<String> stateAbbr = new HashSet<String>(Arrays.asList("AK", "AL", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL",
+																  "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MY",
+																  "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI",
+																  "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"));
+		return stateAbbr;
+	}
+	
 	
 	public boolean isBefore(String dbDate, String calendarDate) {
 		String[] dbDateArray = dbDate.split("/");
 		String[] calendarDateArray = calendarDate.replace("-", "/").split("/");
 		
 		// Swap to yyyy/mm/dd format for proper priority checking
-		String year = dbDateArray[2];
+		String year    = dbDateArray[2];
 		dbDateArray[2] = dbDateArray[1];
 		dbDateArray[1] = dbDateArray[0];
 		dbDateArray[0] = year;
@@ -66,6 +79,7 @@ public class ComboBoxUtil {
 				return int1 < int2 ? true : false;
 			}
 		}
+		
 		return true;
 	}
 }

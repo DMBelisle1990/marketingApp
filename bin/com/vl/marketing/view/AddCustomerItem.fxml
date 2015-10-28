@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="328.0" prefWidth="261.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.vl.marketing.view.CustomerItemNewController">
+   <children>
+      <TextField fx:id="customer" layoutX="90.0" layoutY="30.0" />
+      <TextField fx:id="model" layoutX="90.0" layoutY="80.0" />
+      <TextField fx:id="sku" layoutX="90.0" layoutY="130.0" />
+      <TextField fx:id="price" layoutX="90.0" layoutY="180.0" />
+      <TextField fx:id="normalCost" layoutX="90.0" layoutY="230.0" />
+      <Label layoutX="12.0" layoutY="30.0" prefHeight="17.0" prefWidth="59.0" text="Customer" />
+      <Label layoutX="12.0" layoutY="80.0" text="Model" />
+      <Label layoutX="11.0" layoutY="130.0" text="Reseller SKU" />
+      <Label layoutX="12.0" layoutY="180.0" text="Retail Price" />
+      <Label layoutX="12.0" layoutY="230.0" text="Normal Cost" />
+      <Button fx:id="button" onAction="#handleAdd" layoutX="102.0" layoutY="288.0" mnemonicParsing="false" text="Add Item" />
+   </children>
+</AnchorPane>

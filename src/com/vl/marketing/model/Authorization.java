@@ -1,6 +1,7 @@
 package com.vl.marketing.model;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,6 +19,7 @@ public class Authorization {
 	private final DoubleProperty forecast;
 	private final DoubleProperty actual;
 	
+	private SimpleBooleanProperty checked = new SimpleBooleanProperty(false);
 	
 	public Authorization(String company, String promoType, String promoDescription, String startDate, String endDate,
 						 String vlMarketingNum, String marketingNum, String status, Double forecast, Double actual) {
@@ -35,7 +37,18 @@ public class Authorization {
 		
 	}
 	
-	
+	public SimpleBooleanProperty checkedProperty() {
+        return this.checked;
+    }
+
+    public java.lang.Boolean getChecked() {
+        return this.checkedProperty().get();
+    }
+
+    public void setChecked(final java.lang.Boolean checked) {
+        this.checkedProperty().set(checked);
+    }
+    
 	//TODO Implement setters IF NEEDED
 	public String getCompany() {
 		return company.get();

@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vl.marketing.db.DBAccessor;
+import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Item;
 
 public class ItemNewController {
@@ -26,8 +26,9 @@ public class ItemNewController {
 	@FXML private ComboBox<String> skuField;
 	@FXML private ComboBox<String> typeBox;
 	
-	private RequestNewController caller;
+	private NewAuthorizationController caller;
 	private Stage dialogStage;
+	private DBA database = new DBA();
 	private double normalCost = 0;
 	private double promoCost = 0;
 	private boolean match1;
@@ -88,6 +89,7 @@ public class ItemNewController {
 	
 	@FXML
 	private void handleAdd() {
+		System.out.println("Adding Item with pk " + caller.getRequestNum());
 		try {
 			item = new Item(
 					vlField.getValue(),
@@ -101,7 +103,7 @@ public class ItemNewController {
 					Double.parseDouble(quantityField.getText()),
 					Double.parseDouble(allowanceField.getText()),
 					caller.getRequestNum()
-					);
+				   );
 			caller.addItem(item);
 			dialogStage.close();
 		} catch (Exception e) {
@@ -111,18 +113,18 @@ public class ItemNewController {
 	
 	@FXML
 	private void setVL() {
-		vlField.setValue(DBAccessor.getVL(skuField.getValue(), caller.getCompanyName()));
+		vlField.setValue(database.getVL(skuField.getValue(), caller.getCompanyName()));
 		setPriceFields();
 	}
 	
 	@FXML
 	private void setSKU() {
-		skuField.setValue(DBAccessor.getSKU(vlField.getValue(), caller.getCompanyName()));
+		skuField.setValue(database.getSKU(vlField.getValue(), caller.getCompanyName()));
 		setPriceFields();
 	}
 	
 	private void setPriceFields() {
-		prices = DBAccessor.getPrices(skuField.getValue(), caller.getCompanyName());
+		prices = database.getPrices(skuField.getValue(), caller.getCompanyName());
 		if(prices.isEmpty()) {
 			originalSRPField.setText("");
 			normalCostField.setText("");
@@ -136,9 +138,9 @@ public class ItemNewController {
 		this.dialogStage = dialogStage;
 	}
 	
-	public void setCaller(RequestNewController caller) {
-		this.caller = caller;
-		vlField.getItems().addAll(DBAccessor.getProductNumbers(caller.getCompanyName(), "number"));
-		skuField.getItems().addAll(DBAccessor.getProductNumbers(caller.getCompanyName(), "sku"));
+	public void setCaller(NewAuthorizationController nac) {
+		this.caller = nac;
+		vlField.getItems().addAll(database.getProductNumbers(nac.getCompanyName(), "model"));
+		skuField.getItems().addAll(database.getProductNumbers(nac.getCompanyName(), "resellerSku"));
 	}
 }

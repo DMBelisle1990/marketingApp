@@ -12,7 +12,11 @@ import com.vl.marketing.model.Authorization;
 public class DummyData {
 
 	private String[] promos = {"BER", "PP", "COOP"};
-	private static String[] companies = {"Target", "Frys", "KMart", "Walmart", "Best Buy", "TARGET", "Target.com"};
+	private static String[] companies = {"AAFES", "Amazon", "Amazon Canada", "Best Buy", "Best Buy.com", "BJs Wholesale Club",
+										 "Bluestem Brands", "Frys Electronics", "HSN Direct International", "Ingram Micro",
+										 "Kohls", "NEXCOM", "PriceSmart", "QVC", "Sears Holdings", "Sears Holdings/Kmart", 
+										 "Synnex Canada", "Target.com", "Tiger Direct", "Walmart.com"};
+	
 	private String[] descriptions = {"Retail Ad 9D", "Retail Ad", "Description", "Retail", "9D @ $68"};
 	private String[] states = {"pending", "rejected", "approved", "accepted", "running", "POP", "archived"};
 	private DBA db = new DBA();
