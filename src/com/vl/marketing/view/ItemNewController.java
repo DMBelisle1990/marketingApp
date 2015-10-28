@@ -101,11 +101,11 @@ public class ItemNewController {
 			AnchorPane page = (AnchorPane) loader.load();
 			
 			Stage newStage = new Stage();
-			dialogStage.setTitle("New Item");
-			dialogStage.initModality(Modality.WINDOW_MODAL);
+			newStage.setTitle("New Item");
+			newStage.initModality(Modality.WINDOW_MODAL);
 			//dialogStage.initOwner(primaryStage);
 			Scene scene = new Scene(page);
-			dialogStage.setScene(scene);
+			newStage.setScene(scene);
 
 			CustomerItemNewController controller = loader.getController();
 			//controller.setCaller(nac);
