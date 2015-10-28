@@ -3,13 +3,19 @@ package com.vl.marketing.view;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Item;
 
@@ -85,6 +91,30 @@ public class ItemNewController {
 	@FXML
 	private void calculatePromoPrice() {
 		promoPriceField.setText((Double.parseDouble(promoCostField.getText().replace("$", "")) * PROMO_SCALE) + "");
+	}
+	
+	@FXML
+	private void handlePlus() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/AddCustomerItem.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+			
+			Stage newStage = new Stage();
+			dialogStage.setTitle("New Item");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			//dialogStage.initOwner(primaryStage);
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+
+			CustomerItemNewController controller = loader.getController();
+			//controller.setCaller(nac);
+			controller.setDialogStage(newStage);
+			newStage.show();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
