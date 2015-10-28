@@ -69,14 +69,14 @@ public class PDFGenerator {
 			 BER += items.get(i).getBer().toString() + "\n";
 		}
 
-		form.setField("untitled24", vlNum);
-		form.setField("untitled25", SKU);
-		form.setField("untitled26", type);
-		form.setField("untitled27", SRP);
-		form.setField("untitled28", normalCost);
-		form.setField("untitled29", promoPrice);
-		form.setField("untitled30", promoCost);
-		form.setField("untitled31", BER);
+		form.setField("untitled24", vlNum.replaceAll("null", ""));
+		form.setField("untitled25", SKU.replaceAll("null", ""));
+		form.setField("untitled26", type.replaceAll("null", ""));
+		form.setField("untitled27", SRP.replaceAll("null", ""));
+		form.setField("untitled28", normalCost.replaceAll("null", ""));
+		form.setField("untitled29", promoPrice.replaceAll("null", ""));
+		form.setField("untitled30", promoCost.replaceAll("null", ""));
+		form.setField("untitled31", BER.replaceAll("null", ""));
 
 
 

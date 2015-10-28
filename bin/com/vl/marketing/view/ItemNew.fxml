@@ -60,6 +60,10 @@
             <Label text="Other Allowance" GridPane.rowIndex="10" />
          </children>
       </GridPane>
+      <Button layoutX="261.0" layoutY="356.0" mnemonicParsing="false" onAction="#handlePlus" prefWidth="70.0" text="+" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="8.0">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
       <Button layoutX="261.0" layoutY="356.0" mnemonicParsing="false" onAction="#handleAdd" prefWidth="70.0" text="Add" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="8.0">
          <cursor>
             <Cursor fx:constant="HAND" />
