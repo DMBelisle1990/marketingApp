@@ -29,7 +29,7 @@ public class PDFGenerator {
 		form.setField("untitled3", hashMap.get("city"));
 		form.setField("untitled4", hashMap.get("zip"));
 		form.setField("untitled5", hashMap.get("webAddress"));
-		form.setField("untitled6", hashMap.get("name"));
+		form.setField("untitled6", hashMap.get("contact"));
 		form.setField("untitled7", hashMap.get("title"));
 		form.setField("untitled8", hashMap.get("phone"));
 		form.setField("untitled9", hashMap.get("fax"));
