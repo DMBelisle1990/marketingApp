@@ -45,6 +45,10 @@ public class Main extends Application {
 		//showDashBoard();
 	}
 	
+	public void close() {
+		primaryStage.hide();
+	}
+	
 	
 	public void showLogin() {
 		try {

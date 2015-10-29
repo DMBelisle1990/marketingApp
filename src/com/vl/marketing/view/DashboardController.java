@@ -334,6 +334,7 @@ public class DashboardController {
 
 	@FXML
 	private void logout() {
+		main.close();
 		main.showLogin();
 	}
 
