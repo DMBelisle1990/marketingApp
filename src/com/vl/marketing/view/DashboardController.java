@@ -345,7 +345,7 @@ public class DashboardController {
 			CSVWriter csvWriter = new CSVWriter(new FileWriter("Authorizations.csv"));
 			csvWriter.writeAll(rs, true);
 
-			// Runtime.getRuntime().exec("Authorizations.csv");
+			//Runtime.getRuntime().exec("Authorizations.csv");
 
 			rs.close();
 		}
