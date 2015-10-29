@@ -7,9 +7,12 @@ import com.vl.marketing.util.DummyData;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.DashboardController;
 import com.vl.marketing.view.ItemNewController;
+import com.vl.marketing.view.LoginController;
 import com.vl.marketing.view.NewAuthorizationController;
 import com.vl.marketing.view.NewContactController;
 import com.vl.marketing.view.NewCustomerController;
+import com.vl.marketing.view.RegisterController;
+
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -37,8 +40,56 @@ public class Main extends Application {
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Dashboard");
 		
-		initRootLayout();
-		showDashBoard();
+		showLogin();
+		//initRootLayout();
+		//showDashBoard();
+	}
+	
+	
+	public void showLogin() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/Login.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Log in");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			
+			LoginController controller = loader.getController();
+			controller.setMain(this);
+			controller.setDialogStage(dialogStage);
+			
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void showRegistration() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/Register.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Register");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			
+			RegisterController controller = loader.getController();
+			controller.setDialogStage(dialogStage);
+			
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
+			dialogStage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -172,7 +223,6 @@ public class Main extends Application {
 	}
 
 	public void showAddCustomer() {
-
 		if(windowAlreadyOpen == false) {
 			try {
 				FXMLLoader loader = new FXMLLoader();

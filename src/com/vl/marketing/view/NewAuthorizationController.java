@@ -2,8 +2,6 @@ package com.vl.marketing.view;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -15,19 +13,16 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
-import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
-import com.vl.marketing.db.DBAccessor;
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;
 import com.vl.marketing.util.AlertGenerator;
 import com.vl.marketing.util.ComboBoxUtil;
-import com.vl.marketing.util.DummyData;
 import com.vl.marketing.util.InputChecker;
 import com.vl.marketing.util.RequestNumGenerator;
+
 
 public class NewAuthorizationController {
 	
@@ -86,7 +81,6 @@ public class NewAuthorizationController {
 	private DashboardController caller;
 	private DBA database = new DBA();
 	private ComboBoxUtil cb = new ComboBoxUtil();
-	private String temp;
 	private Stage dialogStage;
 	
 	public NewAuthorizationController() {}
@@ -98,7 +92,6 @@ public class NewAuthorizationController {
      */
 	@FXML
 	private void initialize() {
-		temp = "R" + DummyData.randInt(1000) + DummyData.randInt(1000);
 		itemTable.setPlaceholder(new Label("No Items Added"));
 		itemTable.setItems(items);
 		
@@ -111,15 +104,15 @@ public class NewAuthorizationController {
 		// TODO Change this to always attached but toggle hidden attribute
 		deleteButton = new Button("Delete");
 		deletePresent = false;
-		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-	        @Override
-	        public void handle(ActionEvent event) {
-	        	if(AlertGenerator.confirmation("confirmation", "Are you sure you want to delete this request?", "This action can't be undone")) {
-	        		DBAccessor.deleteRequest(getRequestNum());
-	        		handleRefresh();
-	        	}
-	        }
-	    });
+//		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+//	        @Override
+//	        public void handle(ActionEvent event) {
+//	        	if(AlertGenerator.confirmation("confirmation", "Are you sure you want to delete this request?", "This action can't be undone")) {
+//	        		DBAccessor.deleteRequest(getRequestNum());
+//	        		handleRefresh();
+//	        	}
+//	        }
+//	    });
 		
 		vlNum.setCellValueFactory(cellData -> cellData.getValue().vlNumProperty());
 		sku.setCellValueFactory(cellData -> cellData.getValue().skuProperty());
