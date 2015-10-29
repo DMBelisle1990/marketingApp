@@ -1,9 +1,6 @@
 package com.vl.marketing.view;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;

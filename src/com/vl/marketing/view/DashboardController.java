@@ -1,6 +1,5 @@
 package com.vl.marketing.view;
 
-import java.awt.Checkbox;
 import java.util.ArrayList;
 import org.controlsfx.control.textfield.TextFields;
 import com.vl.marketing.Main;
@@ -9,15 +8,12 @@ import com.vl.marketing.model.Authorization;
 import com.vl.marketing.util.ComboBoxUtil;
 import com.vl.marketing.util.PDFGenerator;
 import com.vl.marketing.util.SendMailTLS;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -25,15 +21,11 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.converter.NumberStringConverter;
 
 public class DashboardController {

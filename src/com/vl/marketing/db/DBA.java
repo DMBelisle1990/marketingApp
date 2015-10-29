@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;
+import com.vl.marketing.model.User;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +42,48 @@ public class DBA {
 	
 	public static List<String> contactHeaders = new ArrayList<String>(
 			  	  Arrays.asList("customerName", "name", "title", "phone", "fax", "email"));
+	
+	public static List<String> userHeaders = new ArrayList<String>(
+		  	  Arrays.asList("username", "name", "title", "email", "phone", "ext", "fax", "rank", "activated"));
+	
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////													//////////
+	//////////                    MKT_USERS		                //////////
+	////////// 													//////////
+	//////////////////////////////////////////////////////////////////////
+	
+	public void addUser(User user) {
+		try {
+			questionMarks = "";
+			query = "INSERT into mkt_users (";
+			for(int i = 0; i < userHeaders.size() - 1; i++) {
+				query += userHeaders.get(i) + ", ";
+				questionMarks += "?, ";
+			}
+			query += userHeaders.get(userHeaders.size() - 1) + ") values(" + questionMarks + "?)";
+			
+			openConnection();
+			ps = con.prepareStatement(query);
+			
+			int i = 1;
+			ps.setString(i++, user.getUsername());
+			ps.setString(i++, user.getName());
+			ps.setString(i++, user.getTitle());
+			ps.setString(i++, user.getEmail());
+			ps.setString(i++, user.getPhone());
+			ps.setString(i++, user.getExt());
+			ps.setString(i++, user.getFax());
+			ps.setString(i++, user.getRank());
+			ps.setDouble(i++, user.getActivated());
+			
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection();
+		}
+	}
 				
 	
 	
