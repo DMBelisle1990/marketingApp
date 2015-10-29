@@ -5,6 +5,7 @@ import org.controlsfx.control.textfield.TextFields;
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Authorization;
+import com.vl.marketing.model.User;
 import com.vl.marketing.util.ComboBoxUtil;
 import com.vl.marketing.util.PDFGenerator;
 import com.vl.marketing.util.SendMailTLS;
@@ -72,6 +73,7 @@ public class DashboardController {
 	private String clickedStatus = "";
 	private Main main;
 	private CheckBox checkBox = new CheckBox();
+	private User user;
 	
 	
 	@FXML
@@ -301,18 +303,22 @@ public class DashboardController {
 		ObservableList<Authorization> toReject = FXCollections.observableArrayList();
 		Authorization auth;
 		
-		for(int i = 0; i < authorizations.size(); i++){
-			table.getSelectionModel().select(i);
-			auth = table.getSelectionModel().getSelectedItem();
-			if(auth.getChecked() == true && auth.getStatus().equals("pending")) {
-				toReject.add(auth);					
-			};
-		}	
-		
-		if(toReject.size() > 0) {
-			database.updateStatus(toReject, "rejected");
-			refreshTable();
-			toReject.clear();
+		if(user.getPrivileges().get("approver")) {
+			for(int i = 0; i < authorizations.size(); i++){
+				table.getSelectionModel().select(i);
+				auth = table.getSelectionModel().getSelectedItem();
+				if(auth.getChecked() == true && auth.getStatus().equals("pending")) {
+					toReject.add(auth);					
+				};
+			}	
+			
+			if(toReject.size() > 0) {
+				database.updateStatus(toReject, "rejected");
+				refreshTable();
+				toReject.clear();
+			}
+		} else {
+			System.out.println("Cannot reject authorizations");
 		}
 	}
 	
@@ -331,6 +337,10 @@ public class DashboardController {
 	
 	public void setClickedStatus(String status) {
 		clickedStatus = status;
+	}
+	
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 	public String getClickedStatus() {

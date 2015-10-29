@@ -3,6 +3,7 @@ package com.vl.marketing;
 import java.io.IOException;
 
 import com.vl.marketing.model.Authorization;
+import com.vl.marketing.model.User;
 import com.vl.marketing.util.DummyData;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.DashboardController;
@@ -114,7 +115,7 @@ public class Main extends Application {
 	/**
      * Launches the Authorization DashBoard
      */
-	public void showDashBoard() {
+	public void showDashBoard(User user) {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(Main.class.getResource("view/Dashboard.fxml"));
@@ -124,6 +125,7 @@ public class Main extends Application {
 			rootLayout.setCenter(dashboard);
 			
 			DashboardController controller = loader.getController();
+			controller.setUser(user);
 			controller.setMain(this);
 		} catch (IOException e) {
 			e.printStackTrace();
