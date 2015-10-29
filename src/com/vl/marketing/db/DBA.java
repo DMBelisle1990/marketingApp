@@ -126,6 +126,23 @@ public class DBA {
 		
 	}
 	
+	public ResultSet getResultSet() {
+		try {
+			openConnection();
+			
+			query = "SELECT * FROM mkt_authorizations";
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+			
+			return rs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return null;
+	}
+	
 	
 	public void addAuthorization(Authorization authorization) {
 		try {

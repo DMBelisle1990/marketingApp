@@ -113,6 +113,14 @@
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
+                  <Button fx:id ="csv" onAction="#generateCSV" mnemonicParsing="false" text="CSV">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id ="logout" onAction="#logout" mnemonicParsing="false" text="Logout">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
               </buttons>
             </ButtonBar>
          </children>

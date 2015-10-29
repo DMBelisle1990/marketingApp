@@ -1,7 +1,14 @@
 package com.vl.marketing.view;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.sql.ResultSet;
 import java.util.ArrayList;
+
 import org.controlsfx.control.textfield.TextFields;
+
+import com.opencsv.CSVWriter;
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Authorization;
@@ -28,6 +35,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.NumberStringConverter;
 
+
 public class DashboardController {
 
 	// Components of the main authorization table
@@ -43,7 +51,7 @@ public class DashboardController {
 	@FXML private TableColumn<Authorization, String> vlMarketingNum;
 	@FXML private TableColumn<Authorization, String> marketingNum;
 	@FXML private TableColumn<Authorization, String> status;
-	
+
 	// ComboBoxes for the filter menu
 	@FXML private TextField companies;
 	@FXML private TextField vlMarketingNums;
@@ -53,35 +61,37 @@ public class DashboardController {
 	@FXML private ComboBox<String> items;
 	@FXML private DatePicker startDates;
 	@FXML private DatePicker endDates;
-	
+
 	// Buttons
 	@FXML private Button authorize;
 	@FXML private Button reject;
 	@FXML private Button delete;
 	@FXML private Button email;
 	@FXML private Button reset;
-	
+	@FXML private Button csv;
+	@FXML private Button logout;
+
 	// List of authorizations to be displayed in table
 	private ObservableList<Authorization> authorizations = FXCollections.observableArrayList();
-	
+
 	// DataBase Access
 	private DBA database = new DBA();
-	
+
 	// Other Variables
 	private ComboBoxUtil cb;
 	private String clickedStatus = "";
 	private Main main;
 	private CheckBox checkBox = new CheckBox();
-	
-	
+
+
 	@FXML
 	private void initialize() {
 		// Link the authorizations list to the table
 		authorizations = database.getAuthorizations();
-		
+
 		selectAll.setGraphic(checkBox);
 
-		
+
 		TableColumn<Authorization, String> customer = new TableColumn<Authorization, String>("company");
 		customer.setCellValueFactory(new PropertyValueFactory<Authorization, String>("company"));
 
@@ -114,7 +124,7 @@ public class DashboardController {
 
 		table.setItems(authorizations);
 		table.getColumns().setAll(selectAll, customer, promoType, promoDescription, startDate, endDate, forecast, actual, vlMarketingNum, marketingNum, status);
-				
+
 		// TODO MOVE INTO SEPERATE CLASS/METHOD
 		status.setCellFactory(column -> {
 			return new TableCell<Authorization, String>() {
@@ -135,11 +145,11 @@ public class DashboardController {
 				}
 			};
 		});
-				
+
 		// Populate the ComboBoxes based on authorizations
 		cb = new ComboBoxUtil(authorizations);
 		populateFilterMenu();
-		
+
 		actual.setCellFactory(TextFieldTableCell.forTableColumn(new NumberStringConverter()));
 
 		actual.setOnEditCommit(new EventHandler<CellEditEvent<Authorization,Number>>() {
@@ -147,12 +157,12 @@ public class DashboardController {
 				Authorization k = (Authorization) t.getTableView().getItems().get(t.getTablePosition().getRow());
 			}});
 
-		
-//		table.setOnMouseClicked(event -> {
-//			TablePosition tp = table.getFocusModel().getFocusedCell();
-//			System.out.println(tp);
-//			table.edit(tp.getRow(),  tp.getTableColumn());
-//		});
+
+		//		table.setOnMouseClicked(event -> {
+		//			TablePosition tp = table.getFocusModel().getFocusedCell();
+		//			System.out.println(tp);
+		//			table.edit(tp.getRow(),  tp.getTableColumn());
+		//		});
 
 		// TODO Replace isShiftDown() with proper login system
 		table.setRowFactory( tv -> {
@@ -173,7 +183,7 @@ public class DashboardController {
 					}
 				}
 			});
-			
+
 			return row ;
 		});
 
@@ -187,11 +197,11 @@ public class DashboardController {
 				}			
 			}
 		});
-		
-		
+
+
 	}
-	
-	
+
+
 	private void populateFilterMenu() {
 		TextFields.bindAutoCompletion(companies, database.getCustomerNames());
 		TextFields.bindAutoCompletion(vlMarketingNums, database.getMarketingNums("vl"));
@@ -199,19 +209,19 @@ public class DashboardController {
 		promoTypes.getItems().addAll(cb.getPromoTypes());
 		states.getItems().addAll(cb.getStates());
 	}
-	
-	
-	
+
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  TABLE FILTERS                   //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
+
 	@FXML 
 	private void filter() {
 		// sendEmail("dbelisle@visual-land.com");
-		
+
 		// Rebuilds list from database in case a new authorization has been submitted
 		authorizations = database.getAuthorizations();
 		table.setItems(authorizations);
@@ -220,20 +230,20 @@ public class DashboardController {
 		for(Authorization auth : table.getItems()) {
 			// This if statement checks the selections in each filter
 			if( 
-				( states.getValue() != null && !auth.getStatus().equals(states.getValue()) ) ||
-			    ( promoTypes.getValue() != null && !auth.getPromoType().equals(promoTypes.getValue()) ) ||	
-			    ( startDates.getValue() != null && cb.isBefore(auth.getStartDate(), startDates.getValue().toString()) ) ||
-			    ( endDates.getValue() != null && !cb.isBefore(auth.getEndDate(), endDates.getValue().toString()) ) ||
-			    ( !auth.getCompany().toLowerCase().contains(companies.getText().toLowerCase()) )
-			  ) { 
-					toRemove.add(auth);
+					( states.getValue() != null && !auth.getStatus().equals(states.getValue()) ) ||
+					( promoTypes.getValue() != null && !auth.getPromoType().equals(promoTypes.getValue()) ) ||	
+					( startDates.getValue() != null && cb.isBefore(auth.getStartDate(), startDates.getValue().toString()) ) ||
+					( endDates.getValue() != null && !cb.isBefore(auth.getEndDate(), endDates.getValue().toString()) ) ||
+					( !auth.getCompany().toLowerCase().contains(companies.getText().toLowerCase()) )
+					) { 
+				toRemove.add(auth);
 			}
-			
+
 		}
 		authorizations.removeAll(toRemove);
 	}
-	
-	
+
+
 	@FXML
 	private void clearFilters() {
 		companies.setText("");
@@ -245,23 +255,23 @@ public class DashboardController {
 		endDates.setValue(null);
 		refreshTable();
 	}
-	
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                 BUTTON METHODS                   //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	@FXML 
 	private void deleteAll() {
 		ObservableList<Authorization> toDelete = FXCollections.observableArrayList();
 		Authorization auth;
-		
+
 		for(int i = 0; i < authorizations.size(); i++){
 			table.getSelectionModel().select(i);
 			auth = table.getSelectionModel().getSelectedItem();
-			
+
 			// Only pending and rejected authorizations will be rejected
 			if(auth.getChecked() == true && (auth.getStatus().equals("pending") || auth.getStatus().equals("rejected"))) {
 				toDelete.add(auth);
@@ -273,13 +283,13 @@ public class DashboardController {
 			toDelete.clear();
 		}
 	}
-	
-	
+
+
 	@FXML
 	private void authorizeAll() {
 		ObservableList<Authorization> toAuthorize = FXCollections.observableArrayList();
 		Authorization auth;
-		
+
 		for(int i = 0; i < authorizations.size(); i++){
 			table.getSelectionModel().select(i);
 			auth = table.getSelectionModel().getSelectedItem();
@@ -287,20 +297,20 @@ public class DashboardController {
 				toAuthorize.add(auth);					
 			};
 		}	
-		
+
 		if(toAuthorize.size() > 0) {
 			database.updateStatus(toAuthorize, "approved");
 			refreshTable();
 			toAuthorize.clear();
 		}
 	}
-	
-	
+
+
 	@FXML
 	private void rejectAll() {
 		ObservableList<Authorization> toReject = FXCollections.observableArrayList();
 		Authorization auth;
-		
+
 		for(int i = 0; i < authorizations.size(); i++){
 			table.getSelectionModel().select(i);
 			auth = table.getSelectionModel().getSelectedItem();
@@ -308,58 +318,81 @@ public class DashboardController {
 				toReject.add(auth);					
 			};
 		}	
-		
+
 		if(toReject.size() > 0) {
 			database.updateStatus(toReject, "rejected");
 			refreshTable();
 			toReject.clear();
 		}
 	}
-	
-	
+
+
 
 	private void sendEmail(String to) {
 		SendMailTLS.send(to);
 	}
-	
-	
+
+	@FXML
+	private void logout() {
+		main.showLogin();
+	}
+
+	@FXML
+	private void generateCSV() {
+		try {
+			ResultSet rs = database.getResultSet();
+
+			CSVWriter csvWriter = new CSVWriter(new FileWriter("Authorizations.csv"));
+			csvWriter.writeAll(rs, true);
+
+			// Runtime.getRuntime().exec("Authorizations.csv");
+
+			rs.close();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                      OTHER			            //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
+
 	public void setClickedStatus(String status) {
 		clickedStatus = status;
 	}
-	
+
 	public String getClickedStatus() {
 		return clickedStatus;
 	}
-	
+
 	@FXML
 	private void newRequest() {
 		setClickedStatus("");
 		main.showNewAuthorization(this, null);
 	}
-	
+
 	public void refreshTable() {
 		authorizations = database.getAuthorizations();
 		table.setItems(authorizations);
 		filter();
 		selectAll.setGraphic(new CheckBox());
 	}
-	
-	
+
+
 	public void setMain(Main main) {
 		this.main = main;
 	}
-	
+
 	public void addAuthorization(Authorization a) {
 		authorizations.add(a);
 		database.addAuthorization(a);
 	}
-	
-	
+
+
 }
 
