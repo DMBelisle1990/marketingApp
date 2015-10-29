@@ -47,13 +47,13 @@ public class RegisterController {
 		
 		if(validInput()) {
 			if(userRank.equals("ACCOUNTING")) 
-				database.addUser(new Accountant(name.getText(), username.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
+				database.addUser(new Accountant(username.getText(), name.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
 			else if(userRank.equals("ADMIN")) 
-				database.addUser(new Admin(name.getText(), username.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
+				database.addUser(new Admin(username.getText(), name.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
 			else if(userRank.equals("MANAGEMENT")) 
-				database.addUser(new Manager(name.getText(), username.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
+				database.addUser(new Manager(username.getText(), name.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
 			else if(userRank.equals("SALES")) 
-				database.addUser(new Sales(name.getText(), username.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
+				database.addUser(new Sales(username.getText(), name.getText(), title.getText(), email.getText(), phone.getText(), ext.getText(), fax.getText(), rank.getValue(), 0), password.getText());
 			
 			
 			dialogStage.close();

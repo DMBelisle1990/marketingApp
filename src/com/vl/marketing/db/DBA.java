@@ -99,14 +99,13 @@ public class DBA {
 	public User getUser(String username, String password) 
 		throws NoSuchAlgorithmException, InvalidKeySpecException 
 	{
-		try {
+		try { 
 			openConnection();
 			query = "SELECT * FROM mkt_users WHERE username = '" + username + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
-			if(rs.next()) {
+			if(rs.next()) { 
 				// This will break if the hash isn't the last column in the database table
-				System.out.println(rs.getString(userHeaders.size() + 1));
 				if(PasswordHash.validatePassword(password, rs.getString(userHeaders.size() + 1))) {
 					System.out.println("You have logged in");
 					String rank = rs.getString(8);
@@ -114,15 +113,15 @@ public class DBA {
 					if(rank.equals("ADMIN"))
 						return new Admin(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
 										 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
-					else if(rank.equals("ACCOUNTANT"))
+					else if(rank.equals("ACCOUNTING"))
 						return new Accountant(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
-								 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+											  rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
 					else if(rank.equals("MANAGEMENT"))
 						return new Manager(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
-								 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+										   rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
 					else if(rank.equals("SALES"))
 						return new Sales(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
-								 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+										 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
 				} else {
 					System.out.println("Invalid Login");
 					return null;
