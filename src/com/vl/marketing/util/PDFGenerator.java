@@ -1,7 +1,11 @@
 package com.vl.marketing.util;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.AcroFields;
@@ -16,13 +20,17 @@ public class PDFGenerator {
 
 	public void setFields(String company, String startDate, String endDate, double forecast, String status, String vlMarketingNumber, double actual, String promoDescription, String marketingNumber, String promoType) throws IOException, DocumentException {
 
-		PdfReader reader = new PdfReader("blankWithFields.pdf");
-		PdfStamper stamper = new PdfStamper(reader, new FileOutputStream(company + "-" + vlMarketingNumber + ".pdf"));
+		PdfReader reader = new PdfReader("src/blankWithFields.pdf");
+		PdfStamper stamper = new PdfStamper(reader, new FileOutputStream("src/" + company + "-" + vlMarketingNumber + ".pdf"));
 		AcroFields form = stamper.getAcroFields();
 
 		DBA database = new DBA();
 		LinkedHashMap<String, String> hashMap = database.getCustomerInfo(company);
 		ObservableList<Item> items = database.getItems(vlMarketingNumber);        
+
+		DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyy");
+		//get current date time with Date()
+		Date date = new Date();
 
 		form.setField("untitled1", company);
 		form.setField("untitled2", hashMap.get("address"));
@@ -46,7 +54,7 @@ public class PDFGenerator {
 		//        form.setField("untitled20", );
 		//        form.setField("untitled21", );
 		//        form.setField("untitled22", );
-		//        form.setField("untitled23", );
+		form.setField("untitled23", dateFormat.format(date));
 
 		// filling out items fields
 		String vlNum = "";
@@ -59,14 +67,14 @@ public class PDFGenerator {
 		String BER = "";
 
 		for(int i = 0; i < items.size(); i++) {
-			 vlNum += items.get(i).getVlNum() + "\n";
-			 SKU += items.get(i).getSku().toString() + "\n";
-			 type += items.get(i).getType() + "\n";
-			 SRP += items.get(i).getSRP().toString() + "\n";
-			 normalCost += items.get(i).getNormalCost().toString() + "\n";
-			 promoPrice += items.get(i).getPromoPrice().toString() + "\n";
-			 promoCost += items.get(i).getPromoCost().toString() + "\n";
-			 BER += items.get(i).getBer().toString() + "\n";
+			vlNum += items.get(i).getVlNum() + "\n";
+			SKU += items.get(i).getSku().toString() + "\n";
+			type += items.get(i).getType() + "\n";
+			SRP += items.get(i).getSRP().toString() + "\n";
+			normalCost += items.get(i).getNormalCost().toString() + "\n";
+			promoPrice += items.get(i).getPromoPrice().toString() + "\n";
+			promoCost += items.get(i).getPromoCost().toString() + "\n";
+			BER += items.get(i).getBer().toString() + "\n";
 		}
 
 		form.setField("untitled24", vlNum.replaceAll("null", ""));
@@ -82,6 +90,10 @@ public class PDFGenerator {
 
 		stamper.close();
 		reader.close();
+
+		File pdfFile= new File("src/" + company + "-" + vlMarketingNumber + ".pdf");
+		Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + pdfFile);
+
 	}
 
 }
