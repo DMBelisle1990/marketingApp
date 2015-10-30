@@ -12,6 +12,7 @@ import com.opencsv.CSVWriter;
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
 import com.vl.marketing.model.Authorization;
+import com.vl.marketing.model.User;
 import com.vl.marketing.util.ComboBoxUtil;
 import com.vl.marketing.util.PDFGenerator;
 import com.vl.marketing.util.SendMailTLS;
@@ -85,7 +86,8 @@ public class DashboardController {
 	private Main main;
 	private CheckBox checkBox = new CheckBox();
 
-
+	private User user;
+	
 	@FXML
 	private void initialize() {
 		// Link the authorizations list to the table
@@ -166,16 +168,17 @@ public class DashboardController {
 		//			table.edit(tp.getRow(),  tp.getTableColumn());
 		//		});
 
-		// TODO Replace isShiftDown() with proper login system
 		table.setRowFactory( tv -> {
 			TableRow<Authorization> row = new TableRow<>();
 			row.setOnMouseClicked(event -> {
 				Authorization rowData = row.getItem();
-				if (!event.isAltDown() && !event.isShiftDown() && event.getClickCount() == 2 && (!row.isEmpty()) ) {
+				if (!event.isAltDown() && event.getClickCount() == 2 && (!row.isEmpty()) ) {
 					setClickedStatus(rowData.getStatus());
-					main.showNewAuthorization(this, rowData);
-				} else if(event.isShiftDown() && event.getClickCount() == 2 && (!row.isEmpty())) {
-					main.showApproval(this, rowData);
+					if(user.getPrivileges().get("submit")) 
+						main.showNewAuthorization(this, rowData);
+					else
+						main.showApproval(this, rowData);
+				// TODO Replace pdf generation with a button
 				} else if (event.isAltDown() && event.getClickCount() == 2 && (!row.isEmpty())) {
 					PDFGenerator pdfGen = new PDFGenerator();
 					try {
@@ -292,20 +295,24 @@ public class DashboardController {
 	private void deleteAll() {
 		ObservableList<Authorization> toDelete = FXCollections.observableArrayList();
 		Authorization auth;
-
-		for(int i = 0; i < authorizations.size(); i++){
-			table.getSelectionModel().select(i);
-			auth = table.getSelectionModel().getSelectedItem();
-
-			// Only pending and rejected authorizations will be rejected
-			if(auth.getChecked() == true && (auth.getStatus().equals("pending") || auth.getStatus().equals("rejected"))) {
-				toDelete.add(auth);
-			};
-		}	
-		if(toDelete.size() > 0) {
-			database.removeAuthorizations(toDelete);
-			refreshTable();
-			toDelete.clear();
+		
+		if(user.getPrivileges().get("delete")) {
+			for(int i = 0; i < authorizations.size(); i++){
+				table.getSelectionModel().select(i);
+				auth = table.getSelectionModel().getSelectedItem();
+				
+				// Only pending and rejected authorizations will be rejected
+				if(auth.getChecked() == true && (auth.getStatus().equals("pending") || auth.getStatus().equals("rejected"))) {
+					toDelete.add(auth);
+				};
+			}	
+			if(toDelete.size() > 0) {
+				database.removeAuthorizations(toDelete);
+				refreshTable();
+				toDelete.clear();
+			}
+		} else {
+			System.out.println("Cannot delete authorizations");
 		}
 	}
 
@@ -314,19 +321,23 @@ public class DashboardController {
 	private void authorizeAll() {
 		ObservableList<Authorization> toAuthorize = FXCollections.observableArrayList();
 		Authorization auth;
-
-		for(int i = 0; i < authorizations.size(); i++){
-			table.getSelectionModel().select(i);
-			auth = table.getSelectionModel().getSelectedItem();
-			if(auth.getChecked() == true && auth.getStatus().equals("pending") || auth.getStatus().equals("rejected")) {
-				toAuthorize.add(auth);					
-			};
-		}	
-
-		if(toAuthorize.size() > 0) {
-			database.updateStatus(toAuthorize, "approved");
-			refreshTable();
-			toAuthorize.clear();
+		
+		if(user.getPrivileges().get("approver")) {
+			for(int i = 0; i < authorizations.size(); i++){
+				table.getSelectionModel().select(i);
+				auth = table.getSelectionModel().getSelectedItem();
+				if(auth.getChecked() == true && auth.getStatus().equals("pending") || auth.getStatus().equals("rejected")) {
+					toAuthorize.add(auth);					
+				};
+			}	
+			
+			if(toAuthorize.size() > 0) {
+				database.updateStatus(toAuthorize, "approved");
+				refreshTable();
+				toAuthorize.clear();
+			}
+		} else {
+			System.out.println("Cannot approve authorizations");
 		}
 	}
 
@@ -335,19 +346,23 @@ public class DashboardController {
 	private void rejectAll() {
 		ObservableList<Authorization> toReject = FXCollections.observableArrayList();
 		Authorization auth;
-
-		for(int i = 0; i < authorizations.size(); i++){
-			table.getSelectionModel().select(i);
-			auth = table.getSelectionModel().getSelectedItem();
-			if(auth.getChecked() == true && auth.getStatus().equals("pending")) {
-				toReject.add(auth);					
-			};
-		}	
-
-		if(toReject.size() > 0) {
-			database.updateStatus(toReject, "rejected");
-			refreshTable();
-			toReject.clear();
+		
+		if(user.getPrivileges().get("approver")) {
+			for(int i = 0; i < authorizations.size(); i++){
+				table.getSelectionModel().select(i);
+				auth = table.getSelectionModel().getSelectedItem();
+				if(auth.getChecked() == true && auth.getStatus().equals("pending")) {
+					toReject.add(auth);					
+				};
+			}	
+			
+			if(toReject.size() > 0) {
+				database.updateStatus(toReject, "rejected");
+				refreshTable();
+				toReject.clear();
+			}
+		} else {
+			System.out.println("Cannot reject authorizations");
 		}
 	}
 
@@ -395,7 +410,15 @@ public class DashboardController {
 	public void setClickedStatus(String status) {
 		clickedStatus = status;
 	}
-
+	
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+	
 	public String getClickedStatus() {
 		return clickedStatus;
 	}

@@ -17,9 +17,11 @@ public abstract class User {
 	// List of all functionality the user is permitted to access
 	protected LinkedHashMap<String, Boolean> privileges = new LinkedHashMap<String, Boolean>();
 	
-	public User(String name, String username, String title, String email, String phone, String ext, String fax, String rank, int activated) {
-		this.name = name;
+	public User() {}
+	
+	public User(String username, String name, String title, String email, String phone, String ext, String fax, String rank, int activated) {
 		this.username = username;
+		this.name = name;
 		this.title = title;
 		this.email = email;
 		this.phone = phone;

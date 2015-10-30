@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
@@ -59,6 +60,7 @@ public class ApprovalController {
 	@FXML private TextField aPhoneField;
 	@FXML private TextField aExtField;
 	@FXML private TextField aFaxField;
+	@FXML private ButtonBar bb;
 	
 	private Stage dialogStage;
 	private Authorization authorization;
@@ -132,39 +134,48 @@ public class ApprovalController {
 	
 	@FXML
 	private void handleReject() {
-		String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
-		if(reason != "NO_MSG") {
-			database.updateStatus(authorization.getVlMarketingNum(), "rejected");
-			caller.refreshTable();
-			handleCancel();
+		if(caller.getUser().getPrivileges().get("approver")) {
+			String reason = AlertGenerator.textInput("Confirm Reject", "Are you sure you want to reject?", "Reason: ");
+			if(reason != "NO_MSG") {
+				database.updateStatus(authorization.getVlMarketingNum(), "rejected");
+				caller.refreshTable();
+				handleCancel();
+			}
+		} else {
+			System.out.println("Cant reject");
 		}
 	}
 //	
 	@FXML
 	private void handleApprove() {
-		if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
-			database.updateStatus(authorization.getVlMarketingNum(), "approved");
-			caller.refreshTable();
-
-//			THIS IS THE PRICE UPDATE SECTION
-//			if(coopType.getText().equals("Price Protection")) {
-//				List<String> skuData = new ArrayList<>();
-//				List<Number> promoPriceData = new ArrayList<>();
-//				List<Number> promoCostData = new ArrayList<>();
-//				for (Item item : itemTable.getItems()) {
-//				    skuData.add(sku.getCellObservableValue(item).getValue());
-//				    promoPriceData.add(promoPrice.getCellObservableValue(item).getValue());
-//				    promoCostData.add(promoCost.getCellObservableValue(item).getValue());
-//				}
-//				DBAccessor.priceProtectionUpdate(companyName.getText(), skuData, promoPriceData, promoCostData);
-//			}
-		handleCancel();
+		if(caller.getUser().getPrivileges().get("approver")) {
+			if(AlertGenerator.confirmation("Confirm Approval", "Are you sure you want to approve?", "")) {
+				database.updateStatus(authorization.getVlMarketingNum(), "approved");
+				caller.refreshTable();
+	
+	//			THIS IS THE PRICE UPDATE SECTION
+	//			if(coopType.getText().equals("Price Protection")) {
+	//				List<String> skuData = new ArrayList<>();
+	//				List<Number> promoPriceData = new ArrayList<>();
+	//				List<Number> promoCostData = new ArrayList<>();
+	//				for (Item item : itemTable.getItems()) {
+	//				    skuData.add(sku.getCellObservableValue(item).getValue());
+	//				    promoPriceData.add(promoPrice.getCellObservableValue(item).getValue());
+	//				    promoCostData.add(promoCost.getCellObservableValue(item).getValue());
+	//				}
+	//				DBAccessor.priceProtectionUpdate(companyName.getText(), skuData, promoPriceData, promoCostData);
+	//			}
+			handleCancel();
+			}
+		} else {
+			System.out.println("Can't approve");
 		}
 	}
 	
 	
 	public void setCaller(DashboardController caller) {
 		this.caller = caller;
+		if(!caller.getUser().getPrivileges().get("approver")) bb.setVisible(false);
 	}
 	
 	private void handleCancel() {
