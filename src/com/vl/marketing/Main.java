@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.User;
 import com.vl.marketing.util.DummyData;
+import com.vl.marketing.view.AdminDashboardController;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.DashboardController;
 import com.vl.marketing.view.ItemNewController;
@@ -30,6 +31,7 @@ public class Main extends Application {
 	private BorderPane rootLayout;
 	private BorderPane requestNew;
 	private BorderPane approval;
+	private BorderPane adminRoot;
 	private Boolean windowAlreadyOpen = false;
 	
 	
@@ -42,8 +44,6 @@ public class Main extends Application {
 		this.primaryStage.setTitle("Dashboard");
 		
 		showLogin();
-		//initRootLayout();
-		//showDashBoard();
 	}
 	
 	
@@ -112,6 +112,30 @@ public class Main extends Application {
 	}
 	
 	
+	public void showAdminDashboard() {
+		try {
+			FXMLLoader rootLoader = new FXMLLoader();
+			rootLoader.setLocation(Main.class.getResource("view/AdminDashboard.fxml"));
+			adminRoot = rootLoader.load();
+			
+			Scene scene = new Scene(adminRoot);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+			
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/Dashboard.fxml"));
+			AnchorPane dashboard = loader.load();
+			
+			adminRoot.setCenter(dashboard);
+			
+			AdminDashboardController controller = rootLoader.getController();
+			controller.setMain(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	/**
      * Launches the Authorization DashBoard
      */
@@ -131,6 +155,46 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	//////////////////////////////////////////////////////////////////////
+	//////////													//////////
+	//////////           DASHBOARD CENTER CONTENT               //////////
+	////////// 													//////////
+	//////////////////////////////////////////////////////////////////////
+	
+	public void showDashboard() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/Dashboard.fxml"));
+			AnchorPane dashboard = loader.load();
+			
+			// Set the dashboard as the center of the root layout
+			adminRoot.setCenter(dashboard);
+			DashboardController controller = loader.getController();
+			controller.setMain(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public void showManagePrivilege() {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/managePrivileges.fxml"));
+			AnchorPane privileges = loader.load();
+			
+			// Set the dashboard as the center of the root layout
+			adminRoot.setCenter(privileges);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
 	
 	/**
 	 * Launches the New Request Form

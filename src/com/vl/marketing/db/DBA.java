@@ -63,7 +63,7 @@ public class DBA {
 	public void addUser(User user, String password) 
 		throws NoSuchAlgorithmException, InvalidKeySpecException 
 	{
-		try {
+		try { 
 			questionMarks = "";
 			query = "INSERT into mkt_users (";
 			for(int i = 0; i < userHeaders.size(); i++) {
