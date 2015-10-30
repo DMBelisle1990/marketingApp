@@ -6,6 +6,7 @@ import com.vl.marketing.model.Authorization;
 import com.vl.marketing.util.DummyData;
 import com.vl.marketing.view.ApprovalController;
 import com.vl.marketing.view.DashboardController;
+import com.vl.marketing.view.ItemFilterController;
 import com.vl.marketing.view.ItemNewController;
 import com.vl.marketing.view.LoginController;
 import com.vl.marketing.view.NewAuthorizationController;
@@ -157,6 +158,30 @@ public class Main extends Application {
 			controller.setEditing();
 			controller.setDialogStage(dialogStage);
 			if(auth != null) controller.setAuthorization(auth);
+			dialogStage.showAndWait();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void showItemFilter(DashboardController dashboardController) {
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("view/ItemFilter.fxml"));
+			AnchorPane page = (AnchorPane) loader.load();
+
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Item Filter");
+			dialogStage.initModality(Modality.WINDOW_MODAL);
+			dialogStage.initOwner(primaryStage);
+			
+			ItemFilterController controller = loader.getController();
+			controller.setMain(this);
+			controller.setDialogStage(dialogStage);
+			controller.setDashboardController(dashboardController);
+			
+			Scene scene = new Scene(page);
+			dialogStage.setScene(scene);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
 			e.printStackTrace();

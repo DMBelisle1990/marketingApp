@@ -70,9 +70,11 @@ public class DashboardController {
 	@FXML private Button reset;
 	@FXML private Button csv;
 	@FXML private Button logout;
+	@FXML private Button itemFilter;
 
 	// List of authorizations to be displayed in table
 	private ObservableList<Authorization> authorizations = FXCollections.observableArrayList();
+	private ObservableList<String> itemsToFilter = FXCollections.observableArrayList();
 
 	// DataBase Access
 	private DBA database = new DBA();
@@ -238,8 +240,19 @@ public class DashboardController {
 					) { 
 				toRemove.add(auth);
 			}
-
+			
+			int temp = 1;
+			
+			for(String s : itemsToFilter) {
+				if(auth.getCompany().equals(s)) {
+					temp = 0;
+				}
+			}
+			
+			if(temp == 1)
+				toRemove.add(auth);
 		}
+
 		authorizations.removeAll(toRemove);
 	}
 
@@ -253,9 +266,21 @@ public class DashboardController {
 		states.getSelectionModel().clearSelection();
 		startDates.setValue(null);
 		endDates.setValue(null);
+		itemsToFilter = FXCollections.observableArrayList();
 		refreshTable();
 	}
 
+	
+	@FXML
+	private void launchItemFilter() {
+		main.showItemFilter(this);
+	}
+	
+	public void filterByItem(ObservableList<String> rightListItems) {
+		itemsToFilter = database.getAllItems(rightListItems);
+		filter();
+	}
+	
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                 BUTTON METHODS                   //////////
@@ -343,10 +368,14 @@ public class DashboardController {
 		try {
 			ResultSet rs = database.getResultSet();
 
-			CSVWriter csvWriter = new CSVWriter(new FileWriter("Authorizations.csv"));
+			FileWriter writer = new FileWriter("Authorizations.csv");
+			
+			CSVWriter csvWriter = new CSVWriter(writer);
 			csvWriter.writeAll(rs, true);
 
-			//Runtime.getRuntime().exec("Authorizations.csv");
+			writer.close();
+			
+			Runtime.getRuntime().exec("Authorizations.csv");
 
 			rs.close();
 		}
