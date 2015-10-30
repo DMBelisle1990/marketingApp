@@ -1,7 +1,10 @@
 package com.vl.marketing.view;
 
+import java.util.ArrayList;
+
 import com.vl.marketing.Main;
 import com.vl.marketing.db.DBA;
+import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;
 
 import javafx.collections.FXCollections;
@@ -23,7 +26,6 @@ public class ItemFilterController {
 	@FXML private Button delete;
 	@FXML private Button submit;
 
-
 	private Main main;
 	private Stage dialogStage;
 	private DashboardController dashboardController;
@@ -31,7 +33,9 @@ public class ItemFilterController {
 	private ObservableList<String> leftListItems;
 	private ObservableList<String> rightListItems;
 	private String removedItem;
+	private ArrayList<String> removed = new ArrayList<String>();
 
+	
 	@FXML
 	private void initialize() {
 		leftListItems = database.getDistinctItems();
@@ -64,6 +68,19 @@ public class ItemFilterController {
 		dialogStage.close();
 	}
 
+	@FXML
+	private void filter() {
+		leftListItems.addAll(removed);
+		removed = new ArrayList<String>();
+		
+		for(String s : leftList.getItems()) {
+			if(!s.toLowerCase().contains(textField.getText().toLowerCase())) {
+				removed.add(s);
+			}
+		}
+		
+		leftListItems.removeAll(removed);
+	}
 
 	public void setMain(Main main) {
 		this.main = main;
