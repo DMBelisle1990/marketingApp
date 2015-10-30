@@ -45,12 +45,11 @@ public class LoginController {
 		User user = database.getUser(username.getText(), password.getText());
 		if(user != null) {
 			dialogStage.close();
-			if(user.getRank().equals("ADMIN")) {
-				main.showAdminDashboard();
-			} else {
-				main.initRootLayout();
-				main.showDashBoard(user);
-			}
+			main.initRootLayout();
+			main.showDashBoard(user);
+			
+			if(user.getRank().equals("ADMIN")) main.showAdminPanel();
+			
 		} else {
 			errorMessage.setText("Invalid Username/Password");
 		}
