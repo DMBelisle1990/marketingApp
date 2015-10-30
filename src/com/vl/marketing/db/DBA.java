@@ -542,7 +542,7 @@ public class DBA {
 		try {
 			openConnection();
 
-			query = "SELECT distinct model FROM VLDEV.mkt_customer_items";
+			query = "SELECT DISTINCT vl_num FROM VLDEV.mkt_items;";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 
@@ -561,29 +561,29 @@ public class DBA {
 		return null;
 	}
 
-	public ObservableList<String> getAllItems(ObservableList<String> itemsToFilter) {
+	public ObservableList<String> get_All_VL_Marketing_Nums_That_Contain_An_Item_In_The_Item_Filter_Menu(ObservableList<String> itemsToFilter) {
 		try {
 			openConnection();
 
 			if(itemsToFilter.size() != 0){
 				
-				query = "SELECT distinct customer FROM VLDEV.mkt_customer_items WHERE";
+				query = "SELECT distinct vlmarketingNum FROM VLDEV.mkt_items WHERE";
 
 				for(String s : itemsToFilter) {
-					query += " model = '" + s + "' OR";
+					query += " vl_num = '" + s + "' OR";
 				}
 				query = query.substring(0, query.length()-3);
 
 				ps = con.prepareStatement(query);
 				rs = ps.executeQuery();
 
-				ObservableList<String> customers = FXCollections.observableArrayList();
+				ObservableList<String> vlNumbers = FXCollections.observableArrayList();
 
 				while(rs.next()) {
-					customers.add(rs.getString(1));
+					vlNumbers.add(rs.getString(1));
 				}
 				
-				return customers;
+				return vlNumbers;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

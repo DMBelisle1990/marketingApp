@@ -244,7 +244,7 @@ public class DashboardController {
 			int temp = 1;
 			
 			for(String s : itemsToFilter) {
-				if(auth.getCompany().equals(s)) {
+				if(auth.getVlMarketingNum().equals(s)) {
 					temp = 0;
 				}
 			}
@@ -277,7 +277,7 @@ public class DashboardController {
 	}
 	
 	public void filterByItem(ObservableList<String> rightListItems) {
-		itemsToFilter = database.getAllItems(rightListItems);
+		itemsToFilter = database.get_All_VL_Marketing_Nums_That_Contain_An_Item_In_The_Item_Filter_Menu(rightListItems);
 		filter();
 	}
 	
