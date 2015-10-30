@@ -173,7 +173,7 @@
                   </GridPane>
                </children>
             </GridPane>
-            <ButtonBar layoutX="570.0" layoutY="762.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0">
+            <ButtonBar fx:id="bb" layoutX="570.0" layoutY="762.0" prefHeight="40.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0">
                <buttons>
                 <Button mnemonicParsing="false" onAction="#handleReject" text="Reject">
                      <cursor>

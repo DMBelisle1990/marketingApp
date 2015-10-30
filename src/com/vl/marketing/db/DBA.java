@@ -1,5 +1,7 @@
 package com.vl.marketing.db;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,9 +12,14 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.vl.marketing.model.Accountant;
+import com.vl.marketing.model.Admin;
 import com.vl.marketing.model.Authorization;
 import com.vl.marketing.model.Item;
+import com.vl.marketing.model.Manager;
+import com.vl.marketing.model.Sales;
 import com.vl.marketing.model.User;
+import com.vl.marketing.util.PasswordHash;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -53,16 +60,20 @@ public class DBA {
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
 
-	public void addUser(User user) {
-		try {
+	
+	public void addUser(User user, String password) 
+		throws NoSuchAlgorithmException, InvalidKeySpecException 
+	{
+		try { 
 			questionMarks = "";
 			query = "INSERT into mkt_users (";
-			for(int i = 0; i < userHeaders.size() - 1; i++) {
+			for(int i = 0; i < userHeaders.size(); i++) {
 				query += userHeaders.get(i) + ", ";
 				questionMarks += "?, ";
 			}
-			query += userHeaders.get(userHeaders.size() - 1) + ") values(" + questionMarks + "?)";
 
+			query += "password_hash) values(" + questionMarks + "?)";
+			
 			openConnection();
 			ps = con.prepareStatement(query);
 
@@ -76,7 +87,8 @@ public class DBA {
 			ps.setString(i++, user.getFax());
 			ps.setString(i++, user.getRank());
 			ps.setDouble(i++, user.getActivated());
-
+			ps.setString(i++, PasswordHash.createHash(password));
+			
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -84,9 +96,48 @@ public class DBA {
 			closeConnection();
 		}
 	}
-
-
-
+	
+	public User getUser(String username, String password) 
+		throws NoSuchAlgorithmException, InvalidKeySpecException 
+	{
+		try { 
+			openConnection();
+			query = "SELECT * FROM mkt_users WHERE username = '" + username + "'";
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+			if(rs.next()) { 
+				// This will break if the hash isn't the last column in the database table
+				if(PasswordHash.validatePassword(password, rs.getString(userHeaders.size() + 1))) {
+					System.out.println("You have logged in");
+					String rank = rs.getString(8);
+					int i = 1;
+					if(rank.equals("ADMIN"))
+						return new Admin(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
+										 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+					else if(rank.equals("ACCOUNTING"))
+						return new Accountant(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
+											  rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+					else if(rank.equals("MANAGEMENT"))
+						return new Manager(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
+										   rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+					else if(rank.equals("SALES"))
+						return new Sales(rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getString(i++), 
+										 rs.getString(i++), rs.getString(i++), rs.getString(i++), rs.getInt(i++));
+				} else {
+					System.out.println("Invalid Login");
+					return null;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}  finally {
+			closeConnection();
+		}
+		return null;
+	}
+				
+	
+	
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                 MKT_AUTHORIZATIONS               //////////
