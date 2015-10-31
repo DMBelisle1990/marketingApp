@@ -25,7 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class DBA {
-	
+
 	// Database variables
 	private static String MYSQL_DRIVER =  "com.mysql.jdbc.Driver";
 	private static String MYSQL_URL    =  "jdbc:mysql://192.168.1.203:3306/VLDEV";
@@ -34,31 +34,32 @@ public class DBA {
 	private PreparedStatement ps;
 	private String query;
 	private String questionMarks = "";
-	
+
 	// All Database headers: CHANGE THESE IF DATABASE CHANGES
 	private static List<String> authorizationsHeaders = new ArrayList<String>(
-				   Arrays.asList("customer", "promoType", "promoDescription", "startDate", "endDate", 
-						   		 "vlMarketingNum", "marketingNum", "status", "forecast", "actual"));
-	
+			Arrays.asList("customer", "promoType", "promoDescription", "startDate", "endDate", 
+					"vlMarketingNum", "marketingNum", "status", "forecast", "actual"));
+
 	public static List<String> itemHeaders = new ArrayList<String>(
-				  Arrays.asList("vl_num", "sku", "type", "retailPrice", "normalCost", "promoPrice", 
-						  		"promoCost", "ber", "quantity", "allowance", "vlMarketingNum"));
-	
+			Arrays.asList("vl_num", "sku", "type", "retailPrice", "normalCost", "promoPrice", 
+					"promoCost", "ber", "quantity", "allowance", "vlMarketingNum"));
+
 	public static List<String> customerHeaders = new ArrayList<String>(
-				  Arrays.asList("name", "address", "city", "state", "zip", "webAddress"));
-	
+			Arrays.asList("name", "address", "city", "state", "zip", "webAddress"));
+
 	public static List<String> contactHeaders = new ArrayList<String>(
-			  	  Arrays.asList("customerName", "name", "title", "phone", "fax", "email"));
-	
+			Arrays.asList("customerName", "name", "title", "phone", "fax", "email"));
+
 	public static List<String> userHeaders = new ArrayList<String>(
-		  	  Arrays.asList("username", "name", "title", "email", "phone", "ext", "fax", "rank", "activated"));
-	
-	
+			Arrays.asList("username", "name", "title", "email", "phone", "ext", "fax", "rank", "activated"));
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                    MKT_USERS		                //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
+
 	
 	public void addUser(User user, String password) 
 		throws NoSuchAlgorithmException, InvalidKeySpecException 
@@ -70,11 +71,12 @@ public class DBA {
 				query += userHeaders.get(i) + ", ";
 				questionMarks += "?, ";
 			}
+
 			query += "password_hash) values(" + questionMarks + "?)";
 			
 			openConnection();
 			ps = con.prepareStatement(query);
-			
+
 			int i = 1;
 			ps.setString(i++, user.getUsername());
 			ps.setString(i++, user.getName());
@@ -94,7 +96,6 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
 	
 	public User getUser(String username, String password) 
 		throws NoSuchAlgorithmException, InvalidKeySpecException 
@@ -142,8 +143,8 @@ public class DBA {
 	//////////                 MKT_AUTHORIZATIONS               //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
+
+
 
 	/**
 	 * @return List of all non archived authorizations in the database
@@ -151,32 +152,49 @@ public class DBA {
 	public ObservableList<Authorization> getAuthorizations() {
 		try {
 			openConnection();
-			
+
 			query = "SELECT * FROM mkt_authorizations";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
-			
+
 			ObservableList<Authorization> authorizations = FXCollections.observableArrayList();
 			while(rs.next()) {
 				int i = 1;
 				authorizations.add(new Authorization(rs.getString(i++), rs.getString(i++), rs.getString(i++),
-													 rs.getString(i++), rs.getString(i++), rs.getString(i++),
-													 rs.getString(i++), rs.getString(i++), rs.getDouble(i++),
-													 rs.getDouble(i++)));
+						rs.getString(i++), rs.getString(i++), rs.getString(i++),
+						rs.getString(i++), rs.getString(i++), rs.getDouble(i++),
+						rs.getDouble(i++)));
 			}
-			
+
 			return authorizations;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
-		
+
 	}
-	
-	
+
+	public ResultSet getResultSet() {
+		try {
+			openConnection();
+
+			query = "SELECT * FROM mkt_authorizations";
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+
+			return rs;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		closeConnection();
+		return null;
+	}
+
+
 	public void addAuthorization(Authorization authorization) {
 		try {
 			// Builds the query, lastHeader is used to prevent a trailing comma
@@ -188,7 +206,7 @@ public class DBA {
 			}
 			String lastHeader = authorizationsHeaders.get(authorizationsHeaders.size() - 1);
 			query += lastHeader + ") values(" + questionMarks + "?)";
-			
+
 			openConnection();
 			ps = con.prepareStatement(query);
 			int i = 1;
@@ -202,7 +220,7 @@ public class DBA {
 			ps.setString(i++, authorization.getStatus());
 			ps.setDouble(i++, authorization.getForecast());
 			ps.setDouble(i++, authorization.getActual());
-			
+
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -210,19 +228,19 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	public void updateAuthorization(Authorization authorization) {
 		try {
 			openConnection();
-			
+
 			query = "UPDATE mkt_authorizations SET "; 
 			for(int i = 0; i < authorizationsHeaders.size() - 1; i++) {
 				query += authorizationsHeaders.get(i) + " = ?, ";
 			}
 			query += authorizationsHeaders.get(authorizationsHeaders.size()-1) + " = ? WHERE vlMarketingNum = ?";
 			ps = con.prepareStatement(query);
-			
+
 			int i = 1;
 			ps.setString(i++, authorization.getCompany());
 			ps.setString(i++, authorization.getPromoType());
@@ -235,7 +253,7 @@ public class DBA {
 			ps.setDouble(i++, authorization.getForecast());
 			ps.setDouble(i++, authorization.getActual());
 			ps.setString(i++, authorization.getVlMarketingNum());
-			
+
 			ps.executeUpdate();
 			System.out.println("Update successful");
 		} catch (SQLException e) {
@@ -244,8 +262,8 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	public void removeAuthorizations(ObservableList<Authorization> toRemove) {
 		try {
 			openConnection();
@@ -254,7 +272,7 @@ public class DBA {
 				query += "'" + toRemove.get(i).getVlMarketingNum() + "',";
 			}
 			query += "'" + toRemove.get(toRemove.size()-1).getVlMarketingNum() + "')";
-			
+
 			ps = con.prepareStatement(query);
 			ps.executeUpdate();
 		} catch (SQLException e) {
@@ -263,8 +281,8 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	/**
 	 * @param vlMarketingNum - Marketing Number of the authorization to be updated
 	 * @param status - New desired status
@@ -272,21 +290,21 @@ public class DBA {
 	public void updateStatus(String vlMarketingNum, String status) {
 		try {
 			openConnection();
-			
+
 			query = "UPDATE mkt_authorizations SET status = ? WHERE vlMarketingNum = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, status);
 			ps.setString(2, vlMarketingNum);
 			ps.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	/**
 	 * @param vlMarketingNum - Marketing Number of the authorization to be updated
 	 * @param status - New desired status
@@ -294,86 +312,86 @@ public class DBA {
 	public void updateStatus(ObservableList<Authorization> toUpdate, String status) {
 		try {
 			openConnection();
-			
+
 			query = "UPDATE mkt_authorizations SET status = ? WHERE vlMarketingNum IN (";
 			for(int i = 0; i < toUpdate.size() - 1; i++) {
 				query += "'" + toUpdate.get(i).getVlMarketingNum() + "',";
 			}
 			query += "'" + toUpdate.get(toUpdate.size()-1).getVlMarketingNum() + "')";
-			
+
 			ps = con.prepareStatement(query);
 			ps.setString(1, status);
 			ps.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
 	}
-	
+
 	/**
 	 * @param vl - Should be either "vl" or "" depending on which Marketing Nums desired
 	 */
 	public ObservableList<String> getMarketingNums(String vl) {
 		try {
 			openConnection();
-			
+
 			ObservableList<String> marketingNums = FXCollections.observableArrayList();
-			
+
 			query = "SELECT " + vl + "marketingNum FROM mkt_authorizations";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				marketingNums.add(rs.getString(1));
 			}
-			
+
 			return marketingNums;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  MKT_CUSTOMERS              		//////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
-	
+
+
+
 	/**
 	 * @return a list of all company names stored in the database
 	 */
 	public ObservableList<String> getCustomerNames() {
 		try {
 			openConnection();
-			
+
 			ObservableList<String> customerNames = FXCollections.observableArrayList();
-			
+
 			query = "SELECT name FROM mkt_customers";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				customerNames.add(rs.getString(1));
 			}
-			
+
 			return customerNames;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
+
+
 	/**
 	 * @param customer: Name of customer who's info is needed
 	 * @return: A map of all the necessary customer information
@@ -381,14 +399,14 @@ public class DBA {
 	public LinkedHashMap<String, String> getCustomerInfo(String customer) {
 		try {
 			openConnection();
-			
+
 			LinkedHashMap<String, String> customerInfo = new LinkedHashMap<String, String>();
-			
+
 			query = "SELECT * FROM mkt_customers JOIN mkt_contacts WHERE customerName = mkt_customers.name AND mkt_customers.name = '" + customer + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
-			
-		
+
+
 			int i = 1;
 			if(rs.next()) {
 				customerInfo.put("name", rs.getString(i++));
@@ -409,16 +427,16 @@ public class DBA {
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
-	
+
+
+
 	public void addCustomer(String name, String address, String city, String state, String zip, String webAddress) {
 		try {
 			openConnection();
-			
+
 			query = "INSERT into mkt_customers (";
 			questionMarks = "";
 			for(int i = 0; i < customerHeaders.size()-1; i++) {
@@ -426,7 +444,7 @@ public class DBA {
 				questionMarks += "?, ";
 			}
 			query += customerHeaders.get(customerHeaders.size()-1) + ") values (" + questionMarks + "?)";
-			
+
 			ps = con.prepareStatement(query);
 			int i = 1;
 			ps.setString(i++, name);
@@ -436,26 +454,26 @@ public class DBA {
 			ps.setString(i++, zip);
 			ps.setString(i++, webAddress);
 			ps.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  MKT_CONTACTS              		//////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	public void addContact(String name, String title, String phone, String fax, String email, String customer) {
 		try {
 			openConnection();
-			
+
 			query = "INSERT into mkt_contacts (";
 			questionMarks = "";
 			for(int i = 0; i < contactHeaders.size()-1; i++) {
@@ -463,7 +481,7 @@ public class DBA {
 				questionMarks += "?, ";
 			}
 			query += contactHeaders.get(contactHeaders.size()-1) + ") values (" + questionMarks + "?)";
-			
+
 			ps = con.prepareStatement(query);
 			int i = 1;
 			ps.setString(i++, customer);
@@ -473,22 +491,22 @@ public class DBA {
 			ps.setString(i++, fax);
 			ps.setString(i++, email);
 			ps.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  MKT_ITEMS              			//////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	/**
 	 * @param vlMarketingNum
 	 * @return returns a list of items associated with the supplied request number
@@ -496,7 +514,7 @@ public class DBA {
 	public ObservableList<Item> getItems(String vlMarketingNum) {
 		try {
 			openConnection();
-			
+
 			query = "SELECT * FROM mkt_items WHERE vlMarketingNum = '" + vlMarketingNum + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
@@ -504,8 +522,8 @@ public class DBA {
 			while(rs.next()) {
 				int i = 1;
 				items.add(new Item(rs.getString(i++), rs.getString(i++), rs.getString(i++), 
-								   rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++),
-								   rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++), rs.getString(i++)));
+						rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++),
+						rs.getDouble(i++), rs.getDouble(i++), rs.getDouble(i++), rs.getString(i++)));
 			}
 			return items;
 		} catch (SQLException e) {
@@ -513,15 +531,15 @@ public class DBA {
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
+
+
 	public void clearItems(String vlMarketingNum) {
 		try {
 			openConnection();
-			
+
 			query = "DELETE FROM mkt_items WHERE vlMarketingNum = ?";
 			ps = con.prepareStatement(query);
 			ps.setString(1, vlMarketingNum);
@@ -530,15 +548,15 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	/**
 	 * Iterates through the list of items and adds them one at a time
 	 */
 	public void addItems(ObservableList<Item> items) {
 		try {
 			openConnection();
-			
+
 			for(Item item : items) {
 				query = "INSERT into mkt_items (";
 				questionMarks = "";
@@ -547,7 +565,7 @@ public class DBA {
 					questionMarks += "?, ";
 				}
 				query += itemHeaders.get(itemHeaders.size()-1) + ") values (" + questionMarks + "?)";
-				
+
 				ps = con.prepareStatement(query);
 				int i = 1;
 				ps.setString(i++, item.getVlNum());
@@ -569,14 +587,70 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
+	public ObservableList<String> getDistinctItems() {
+		try {
+			openConnection();
+
+			query = "SELECT DISTINCT vl_num FROM VLDEV.mkt_items;";
+			ps = con.prepareStatement(query);
+			rs = ps.executeQuery();
+
+			ObservableList<String> distinctItems = FXCollections.observableArrayList();
+
+			while(rs.next()) {
+				distinctItems.add(rs.getString(1));
+			}
+
+			return distinctItems;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection();
+		}
+		return null;
+	}
+
+	public ObservableList<String> get_All_VL_Marketing_Nums_That_Contain_An_Item_In_The_Item_Filter_Menu(ObservableList<String> itemsToFilter) {
+		try {
+			openConnection();
+
+			if(itemsToFilter.size() != 0){
+				
+				query = "SELECT distinct vlmarketingNum FROM VLDEV.mkt_items WHERE";
+
+				for(String s : itemsToFilter) {
+					query += " vl_num = '" + s + "' OR";
+				}
+				query = query.substring(0, query.length()-3);
+
+				ps = con.prepareStatement(query);
+				rs = ps.executeQuery();
+
+				ObservableList<String> vlNumbers = FXCollections.observableArrayList();
+
+				while(rs.next()) {
+					vlNumbers.add(rs.getString(1));
+				}
+				
+				return vlNumbers;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeConnection();
+		}
+		return null;
+	}		
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  MKT_CUSTOMER_ITEMS              //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
+
 	/**
 	 * @param customer
 	 * @param type 
@@ -585,30 +659,30 @@ public class DBA {
 	public ObservableList<String> getProductNumbers(String customer, String type) {
 		try {
 			openConnection();
-			
+
 			query = "SELECT " + type + " FROM mkt_customer_items WHERE customer = '" + customer + "'";
 			ps = con.prepareStatement(query);
 			rs = ps.executeQuery();
-			
+
 			ObservableList<String> productNumbers = FXCollections.observableArrayList();
 			while(rs.next()) {
 				if(rs.getString(1) != null) {
 					productNumbers.add(rs.getString(1));
 				}
 			}
-			
+
 			return productNumbers;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
-	
+
+
+
 	public void addCustomerItem(String a, String b, String c, String d, String f){
 		try {
 			openConnection();
@@ -617,7 +691,7 @@ public class DBA {
 
 			ps = con.prepareStatement(query);
 
-			
+
 			ps.setString(1, a);
 			ps.setString(2, b);
 			ps.setString(3, c);
@@ -634,8 +708,8 @@ public class DBA {
 			closeConnection();
 		}
 	}
-	
-	
+
+
 	public String getVL(String sku, String customer) {
 		try {
 			openConnection();
@@ -650,8 +724,8 @@ public class DBA {
 		}
 		return null;
 	}
-	
-	
+
+
 	public String getSKU(String model, String customer) {
 		try {
 			openConnection();
@@ -666,8 +740,8 @@ public class DBA {
 		}
 		return null;
 	}
-	
-	
+
+
 	public List<Double> getPrices(String resellerSku, String customer) {
 		try {
 			openConnection();
@@ -680,38 +754,38 @@ public class DBA {
 				prices.add(rs.getDouble(1));
 				prices.add(rs.getDouble(2));
 			}
-			
+
 			return prices;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			closeConnection();
 		}
-		
+
 		return null;
 	}
-	
-	
-	
+
+
+
 	//////////////////////////////////////////////////////////////////////
 	//////////													//////////
 	//////////                  HELPERS                         //////////
 	////////// 													//////////
 	//////////////////////////////////////////////////////////////////////
-	
-	
+
+
 	public void openConnection() {
 		try {
 			Class.forName(MYSQL_DRIVER);
-	        con = DriverManager.getConnection(MYSQL_URL,"Dan","mktdb");
+			con = DriverManager.getConnection(MYSQL_URL,"Dan","mktdb");
 		} catch (ClassNotFoundException e) {
-	        e.printStackTrace();
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	
+
+
 	public void closeConnection() {
 		if(con != null) {
 			try {
@@ -721,6 +795,6 @@ public class DBA {
 			}
 		}
 	}
-	
-	
+
+
 }

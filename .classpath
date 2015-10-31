@@ -3,23 +3,23 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/lombok.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/controlsfx-8.40.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/controlsfx-samples-8.40.9.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/fxsampler-1.0.8.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Downloads/controlsfx-8.40.9 (1)/openjfx-dialogs-1.0.3.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/activation.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/javax.mail.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itextpdf-5.5.7.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itextpdf-5.5.7-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itextpdf-5.5.7-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-pdfa-5.5.7.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-pdfa-5.5.7-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-pdfa-5.5.7-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-xtra-5.5.7.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-xtra-5.5.7-javadoc.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/itext-xtra-5.5.7-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/pdfbox-app-2.0.0-RC1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Daniel/Desktop/marketingAppJars/mysql-connector-java-5.0.8/mysql-connector-java-5.0.8-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/activation.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/controlsfx-8.40.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/controlsfx-samples-8.40.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/fxsampler-1.0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itextpdf-5.5.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itextpdf-5.5.7-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itextpdf-5.5.7-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-pdfa-5.5.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-pdfa-5.5.7-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-pdfa-5.5.7-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-xtra-5.5.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-xtra-5.5.7-javadoc.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/itext-xtra-5.5.7-sources.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/javax.mail.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/mysql-connector-java-5.1.36-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/opencsv-3.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/openjfx-dialogs-1.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Public/.Jar files/pdfbox-app-2.0.0-RC1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
